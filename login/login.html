@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="wraper">
+    <h1>LOGIN</h1>
+    <form action="">
+      <input type="text" id="username" placeholder="Username" min="6" oninput="checkInputs()">
+      <div id="usernameError" class="error"></div>
+      <input type="password" id="password" placeholder="Password" min="6" oninput="checkInputs()">
+      <div id="passwordError" class="error"></div>
+      <div class="remember-forgot">
+        <div class="remember">
+          <input type="checkbox" id="remember" name="remember">
+          <label for="remember">Remember me</label>
+        </div>
+        <a href="">Forgot?</a>
+      </div>
+      <button id="loginBtn" onclick="return validateForm()" disabled>LOGIN</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function checkInputs() {
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+    var loginBtn = document.getElementById("loginBtn");
+
+    if (username !== "" && password !== "") {
+      loginBtn.disabled = false;
+    } else {
+      loginBtn.disabled = true;
+    }
+  }
+  
+  function validateForm() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+    if (username.length < 6) {
+      document.getElementById("usernameError").innerHTML = "Username must be at least 6 characters";
+    } else {
+      document.getElementById("usernameError").innerHTML = "";
+    }
+    if (password.length < 6) {
+      document.getElementById("passwordError").innerHTML = "Password must be at least 6 characters";
+    } else {
+      document.getElementById("passwordError").innerHTML = "";
+    }
+    if (username.length >= 6 && password.length >= 6) {
+      alert(`Username: ${username}\nPassword: ${password}`);
+    }
+    return false;
+  }
+</script>
+
+</body>
+</html>
