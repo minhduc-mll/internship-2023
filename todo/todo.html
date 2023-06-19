@@ -1,63 +1,65 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Login</title>
-  <link rel="stylesheet" href="login.css">
+  <title>Todo App</title>
+  <link rel="stylesheet" href="todo.css">
+  <script src="https://kit.fontawesome.com/ef10e698c9.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
 
-<div class="container">
-  <div class="wraper">
-    <h1>LOGIN</h1>
-    <form action="">
-      <input type="text" id="username" placeholder="Username" min="6" oninput="checkInputs()">
-      <div id="usernameError" class="error"></div>
-      <input type="password" id="password" placeholder="Password" min="6" oninput="checkInputs()">
-      <div id="passwordError" class="error"></div>
-      <div class="remember-forgot">
-        <div class="remember">
-          <input type="checkbox" id="remember" name="remember">
-          <label for="remember">Remember me</label>
+  <div class="container">
+    <div class="wraper">
+      <h1>Todo App</h1>
+      <div class="todo">
+        <div class="add-todo">
+          <input type="text" id="add-task" placeholder="Add your new todo">
+          <button><i class="fa-solid fa-plus"></i></button>
         </div>
-        <a href="">Forgot?</a>
+        <div id="todo-item" class="todo-list"></div>
+        <div class="todo-bottom">
+          <div class="todo-detail">You have <span id="todo-size"></span> pending tasks</div>
+          <button>Clear All</button>
+        </div>
       </div>
-      <button id="loginBtn" onclick="return validateForm()" disabled>LOGIN</button>
-    </form>
+    </div>
   </div>
-</div>
 
-<script>
-  function checkInputs() {
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-    var loginBtn = document.getElementById("loginBtn");
+  <script>
+    let todos = [
+      { id: 0, task: "Buy a new gaming laptop" },
+      { id: 1, task: "Complete a previous task" },
+      { id: 2, task: "Create video for YouTube" },
+      { id: 3, task: "Create a new portfolio site" },
+    ];
 
-    if (username !== "" && password !== "") {
-      loginBtn.disabled = false;
-    } else {
-      loginBtn.disabled = true;
+    function showTask() {
+      let todoString = "";
+      todos.forEach((todo) => {
+        todoString += `<div class="todo-item">
+          <span class="detail">${todo.task}</span>
+          <button><i class="fa-solid fa-trash"></i></button>
+          </div>`
+      });
+      document.getElementById("todo-item").innerHTML = todoString;
+      document.getElementById("todo-size").innerHTML = todos.length;
     }
-  }
-  
-  function validateForm() {
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
-    if (username.length < 6) {
-      document.getElementById("usernameError").innerHTML = "Username must be at least 6 characters";
-    } else {
-      document.getElementById("usernameError").innerHTML = "";
+
+    showTask();
+
+    function addTask() {
+      let task = document.getElementById("add-task").value;
+      if (task !== "") {
+        todos = [...todos, { id: todos.length, task: task }]
+        showTask();
+      }
     }
-    if (password.length < 6) {
-      document.getElementById("passwordError").innerHTML = "Password must be at least 6 characters";
-    } else {
-      document.getElementById("passwordError").innerHTML = "";
-    }
-    if (username.length >= 6 && password.length >= 6) {
-      alert(`Username: ${username}\nPassword: ${password}`);
-    }
-    return false;
-  }
-</script>
+
+    document.querySelector("button").addEventListener("click", addTask);
+
+  </script>
 
 </body>
+
 </html>
