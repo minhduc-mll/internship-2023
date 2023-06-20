@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="wraper">
+    <h1>LOGIN</h1>
+    <form action="">
+      <input type="text" id="username" placeholder="Username" oninput="checkInputs()" onfocus="onForcusUsername()">
+      <div id="usernameError" class="error"></div>
+      <input type="password" id="password" placeholder="Password" oninput="checkInputs()" onfocus="onForcusPassword()">
+      <div id="passwordError" class="error"></div>
+      <div class="remember-forgot">
+        <div class="remember">
+          <input type="checkbox" id="remember" name="remember">
+          <label for="remember">Remember me</label>
+        </div>
+        <a href="">Forgot?</a>
+      </div>
+      <button id="loginBtn" onclick="return validateForm()" disabled>LOGIN</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  let usernameError = "";
+  let passwordError = "";
+  
+  function checkInputs() {
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+    var loginBtn = document.getElementById("loginBtn");
+
+    if (username !== "" && password !== "") {
+      loginBtn.disabled = false;
+    } else {
+      loginBtn.disabled = true;
+    }
+  }
+
+  function onForcusUsername() {
+    if (usernameError !== "") {
+      usernameError = "";
+      document.getElementById("usernameError").innerHTML = usernameError;
+      document.getElementById("username").value = "";
+    }
+  }
+
+  function onForcusPassword() {
+    if (passwordError !== "") {
+      passwordError = "";
+      document.getElementById("passwordError").innerHTML = passwordError;
+      document.getElementById("password").value = "";
+    }
+  }
+  
+  function validateForm() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+    if (username.length < 6) {
+      usernameError = "Username must be at least 6 characters";
+    } else {
+      usernameError = "";
+    }
+    if (password.length < 6) {
+      passwordError = "Password must be at least 6 characters";
+    } else {
+      passwordError = "";
+    }
+    if (username.length >= 6 && password.length >= 6) {
+      alert(`Username: ${username}\nPassword: ${password}`);
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+    }
+    document.getElementById("usernameError").innerHTML = usernameError;
+    document.getElementById("passwordError").innerHTML = passwordError;
+    return false;
+  }
+</script>
+
+</body>
+</html>
