@@ -49,12 +49,12 @@
 
     function addEventDeleteBtn() {
       let deleteBtns = document.getElementsByClassName("delete-btn");
-      for (let i = 0; i < deleteBtns.length; i++) {
-        deleteBtns[i].addEventListener('click', () => {
-          todos = todos.filter((todo) => todo !== todos[i]);
+      Array.from(deleteBtns).forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          todos = todos.filter((todo) => todo !== todos[index]);
           showTask();
         })
-      }
+      })
     }
 
     function addTask() {
