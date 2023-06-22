@@ -19,31 +19,33 @@ const props = defineProps<Props>();
 .todo-item {
   display: flex;
   position: relative;
-}
 
-.task-detail {
-  width: 100%;
-  padding: 10px;
-  background-color: #eee;
-  border-radius: 2px;
-}
+  .task-detail {
+    width: 100%;
+    padding: 10px;
+    background-color: #eee;
+    border-radius: 2px;
+  }
 
-.delete-btn {
-  height: 100%;
-  display: none;
-  position: absolute;
-  width: 40px;
-  top: 0;
-  right: 0;
-  background-color: red;
-  color: white;
-  border: none;
-  border-radius: 2px;
-  padding: 6px;
-  cursor: pointer;
-}
+  .delete-btn {
+    height: 100%;
+    display: none;
+    position: absolute;
+    width: 40px;
+    top: 0;
+    right: 0;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 2px;
+    padding: 6px;
+    cursor: pointer;
+  }
 
-.todo-item:hover .delete-btn {
-  display: block;
+  &:hover {
+    .delete-btn {
+      display: block;
+    }
+  }
 }
 </style>

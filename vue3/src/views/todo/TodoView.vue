@@ -1,7 +1,7 @@
 <template>
   <BaseLayout>
     <div class="todo-container">
-      <div class="wraper">
+      <div class="todo-wraper">
         <h1>Todo App</h1>
         <div class="todo">
           <div class="add-todo">
@@ -27,17 +27,17 @@
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import TaskComponent from "@/components/taskComponent/TaskComponent.vue";
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
-import type { Task } from "@/components/taskComponent/TaskComponent";
+import type { Task } from "./TodoView";
 import type { Ref } from "vue";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public task: Ref<string> = this.ref("");
     public todos: Ref<Array<Task>> = this.ref([
-      { id: 0, detail: "Buy a new gaming laptop" },
-      { id: 1, detail: "Complete a previous task" },
-      { id: 2, detail: "Create video for YouTube" },
-      { id: 3, detail: "Create a new portfolio site" },
+      { id: 1, detail: "Buy a new gaming laptop" },
+      { id: 2, detail: "Complete a previous task" },
+      { id: 3, detail: "Create video for YouTube" },
+      { id: 4, detail: "Create a new portfolio site" },
     ]);
 
     public constructor() {
@@ -46,7 +46,7 @@ const app = defineClassComponent(
 
     public addTask = () => {
       if (this.task.value !== "") {
-        const lastTaskId = this.todos.value[this.todos.value.length - 1]?.id || -1;
+        const lastTaskId = this.todos.value[this.todos.value.length - 1]?.id || 0;
         const newTaskId = lastTaskId + 1;
         this.todos.value = [...this.todos.value, { id: newTaskId, detail: this.task.value }];
         this.task.value = "";
@@ -74,65 +74,66 @@ const app = defineClassComponent(
   place-items: center;
   height: 100%;
   background-image: linear-gradient(aquamarine, cornflowerblue);
-}
 
-.wraper {
-  width: 360px;
-  position: relative;
-  padding: 20px;
-  background-color: white;
-  border-radius: 5px;
-}
+  .todo-wraper {
+    width: 360px;
+    position: relative;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 2px 4px 10px 1px rgba(128, 128, 128, 0.5);
 
-h1 {
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
 
-.todo {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    .todo {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
 
-.add-todo {
-  width: 100%;
-  display: flex;
-  gap: 5px;
-}
+      .add-todo {
+        width: 100%;
+        display: flex;
+        gap: 5px;
 
-.add-todo input {
-  width: calc(100% - 40px);
-  border: 1px solid gray;
-  padding: 10px;
-  border-radius: 2px;
-}
+        input {
+          width: calc(100% - 40px);
+          border: 1px solid gray;
+          padding: 10px;
+          border-radius: 2px;
+        }
 
-.add-todo button {
-  width: 40px;
-}
+        button {
+          width: 40px;
+        }
+      }
 
-.todo-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 0;
-}
+      .todo-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 0;
+      }
 
-.todo-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-}
+      .todo-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+      }
 
-button {
-  background-color: #904ae7;
-  color: white;
-  border: none;
-  border-radius: 2px;
-  padding: 6px;
-  cursor: pointer;
+      button {
+        background-color: #904ae7;
+        color: white;
+        border: none;
+        border-radius: 2px;
+        padding: 6px;
+        cursor: pointer;
+      }
+    }
+  }
 }
 </style>

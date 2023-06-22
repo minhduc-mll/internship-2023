@@ -1,7 +1,7 @@
 <template>
   <BaseLayout>
     <div class="login-container">
-      <div class="wraper">
+      <div class="login-wraper">
         <h1>LOGIN</h1>
         <form action="" @submit.prevent="app.validateForm">
           <input type="text" placeholder="Username" v-model="app.username.value" @input="app.checkInputs" @focus="app.onForcusUsername" />
@@ -13,7 +13,7 @@
               <input type="checkbox" id="remember" name="remember" />
               <label for="remember">Remember me</label>
             </div>
-            <a href="">Forgot?</a>
+            <a href="#">Forgot?</a>
           </div>
           <button>LOGIN</button>
         </form>
@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
@@ -88,78 +88,79 @@ const app = defineClassComponent(
   display: grid;
   place-items: center;
   height: 100%;
-}
 
-.wraper {
-  width: 400px;
-  position: relative;
-  text-align: center;
-  padding: 20px;
-  background-color: white;
-  border-radius: 5px;
-}
+  .login-wraper {
+    width: 400px;
+    position: relative;
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 2px 4px 10px 1px rgba(128, 128, 128, 0.5);
 
-h1 {
-  font-size: 36px;
-  font-weight: bold;
-  margin: 16px 0 36px 0;
-}
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 16px 0 36px 0;
+    }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
 
-input,
-button {
-  height: 50px;
-  border-radius: 2px;
-}
+      input,
+      button {
+        height: 50px;
+        border-radius: 2px;
+      }
 
-input {
-  border: none;
-  background-color: #e7e7e7;
-  font-size: 14px;
-  padding: 0 20px;
-}
+      input {
+        border: none;
+        background-color: #e7e7e7;
+        font-size: 14px;
+        padding: 0 20px;
 
-input::placeholder {
-  font-weight: bold;
-}
+        &::placeholder {
+          font-weight: bold;
+        }
+      }
 
-.error {
-  color: red;
-}
+      .error {
+        color: red;
+      }
 
-.remember-forgot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+      .remember-forgot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-.remember {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
+        .remember {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
 
-a {
-  text-decoration: none;
-}
+        a {
+          text-decoration: none;
+        }
+      }
 
-button {
-  border: none;
-  background-color: #8381f7;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  margin-top: 10px;
-  cursor: pointer;
-}
+      button {
+        border: none;
+        background-color: #8381f7;
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 10px;
+        cursor: pointer;
 
-button:disabled {
-  background-color: gray;
-  cursor: default;
+        &:disabled {
+          background-color: gray;
+          cursor: default;
+        }
+      }
+    }
+  }
 }
 </style>
