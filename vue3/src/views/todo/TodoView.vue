@@ -1,5 +1,5 @@
 <template>
-  <BaseLayout>
+  <PageLayout>
     <div class="todo-container">
       <div class="todo-wraper">
         <h1>Todo App</h1>
@@ -20,12 +20,12 @@
         </div>
       </div>
     </div>
-  </BaseLayout>
+  </PageLayout>
 </template>
 
 <script setup lang="ts">
-import BaseLayout from "@/layouts/BaseLayout.vue";
-import TaskComponent from "@/components/taskComponent/TaskComponent.vue";
+import PageLayout from "@/layouts/page/PageLayout.vue";
+import TaskComponent from "@/components/task/TaskComponent.vue";
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import type { Task } from "./TodoView";
 import type { Ref } from "vue";

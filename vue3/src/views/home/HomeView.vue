@@ -1,14 +1,14 @@
 <template>
-  <BaseLayout>
+  <PageLayout>
     <UnitTestComponent msg="Hello world" />
     <button @click="app.onClickA">Change to A</button>
     <button @click="app.onClickB">Change to B</button>
-  </BaseLayout>
+  </PageLayout>
 </template>
 
 <script setup lang="ts">
 import UnitTestComponent from "@/components/UnitTestComponent.vue";
-import BaseLayout from "@/layouts/BaseLayout.vue";
+import PageLayout from "@/layouts/page/PageLayout.vue";
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 
 const app = defineClassComponent(

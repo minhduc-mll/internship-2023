@@ -3,7 +3,7 @@
     <div class="login-container">
       <div class="login-wraper">
         <h1>LOGIN</h1>
-        <form action="" @submit.prevent="app.validateForm">
+        <form action="">
           <input type="text" placeholder="Username" v-model="app.username.value" @input="app.checkInputs" @focus="app.onForcusUsername" />
           <div class="error">{{ app.usernameError.value }}</div>
           <input type="password" placeholder="Password" v-model="app.password.value" @input="app.checkInputs" @focus="app.onForcusPassword" />
@@ -15,7 +15,7 @@
             </div>
             <a href="#">Forgot?</a>
           </div>
-          <button>LOGIN</button>
+          <button class="login-btn" @click.prevent="app.validateForm" :disabled="app.disabled.value">LOGIN</button>
         </form>
       </div>
     </div>
@@ -33,6 +33,7 @@ const app = defineClassComponent(
     public password: Ref<string> = this.ref("");
     public usernameError: Ref<string> = this.ref("");
     public passwordError: Ref<string> = this.ref("");
+    public disabled = this.ref(true);
 
     public constructor() {
       super();
@@ -40,9 +41,9 @@ const app = defineClassComponent(
 
     public checkInputs = () => {
       if (this.username.value !== "" && this.password.value !== "") {
-        console.log("true");
+        this.disabled.value = false;
       } else {
-        console.log("false");
+        this.disabled.value = true;
       }
     };
 
