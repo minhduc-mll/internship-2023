@@ -9,15 +9,12 @@
             <button @click="app.addTask"><i class="bi bi-plus-lg fa-6x" style="font-size: 24px"></i></button>
           </div>
           <div class="todo-list">
-            <div class="todo-item" v-for="todo in app.todos.value" :key="todo.id">
-              <span class="detail">{{ todo.task }}</span>
-              <button @click="(event) => app.deleteTask(todo.id)" class="delete-btn">
-                <i class="bi bi-trash-fill"></i>
-              </button>
-            </div>
+            <template v-for="todo in app.todos.value" :key="todo.id">
+              <TaskComponent :task="todo" @delete-task="app.deleteTask"></TaskComponent>
+            </template>
           </div>
           <div class="todo-bottom">
-            <div class="todo-detail">You have {{ app.todos.length }} pending tasks</div>
+            <div class="todo-detail">You have {{ app.todos.value.length }} pending tasks</div>
             <button @click="app.clearTask">Clear All</button>
           </div>
         </div>
@@ -28,18 +25,19 @@
 
 <script setup lang="ts">
 import BaseLayout from "@/layouts/BaseLayout.vue";
+import TaskComponent from "@/components/taskComponent/TaskComponent.vue";
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
-import type { Todo } from "./TodoView";
-import { Ref } from "vue";
+import type { Task } from "@/components/taskComponent/TaskComponent";
+import type { Ref } from "vue";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public task: Ref<string> = this.ref("");
-    public todos: Ref<Array<Todo>> = this.ref([
-      { id: 0, task: "Buy a new gaming laptop" },
-      { id: 1, task: "Complete a previous task" },
-      { id: 2, task: "Create video for YouTube" },
-      { id: 3, task: "Create a new portfolio site" },
+    public todos: Ref<Array<Task>> = this.ref([
+      { id: 0, detail: "Buy a new gaming laptop" },
+      { id: 1, detail: "Complete a previous task" },
+      { id: 2, detail: "Create video for YouTube" },
+      { id: 3, detail: "Create a new portfolio site" },
     ]);
 
     public constructor() {
@@ -48,12 +46,14 @@ const app = defineClassComponent(
 
     public addTask = () => {
       if (this.task.value !== "") {
-        this.todos.value = [...this.todos.value, { id: this.todos.value.length, task: this.task.value }];
+        const lastTaskId = this.todos.value[this.todos.value.length - 1]?.id || -1;
+        const newTaskId = lastTaskId + 1;
+        this.todos.value = [...this.todos.value, { id: newTaskId, detail: this.task.value }];
         this.task.value = "";
       }
     };
 
-    public deleteTask = (id) => {
+    public deleteTask = (id: number) => {
       this.todos.value = this.todos.value.filter((t) => t.id !== id);
     };
 
@@ -118,32 +118,6 @@ h1 {
   flex-direction: column;
   gap: 8px;
   padding: 10px 0;
-}
-
-.todo-item {
-  display: flex;
-  position: relative;
-}
-
-.todo-item span {
-  width: 100%;
-  padding: 10px;
-  background-color: #eee;
-  border-radius: 2px;
-}
-
-.todo-item button {
-  height: 100%;
-  display: none;
-  position: absolute;
-  width: 40px;
-  top: 0;
-  right: 0;
-  background-color: red;
-}
-
-.todo-item:hover button {
-  display: block;
 }
 
 .todo-bottom {
