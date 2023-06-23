@@ -1,0 +1,9 @@
+{
+  "packages": ["nodejs-18_x", "yarn"],
+  "shell": {
+    "init_hook": ["yarn"],
+    "scripts": {
+      "test": ["echo \"Error: no test specified\" && exit 1"]
+    }
+  }
+}
