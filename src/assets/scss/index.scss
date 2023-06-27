@@ -1,1 +1,53 @@
 @import "./modules";
+
+* {
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Fahkwang", sans-serif;
+  font-weight: 500;
+  color: #26222f;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+a,
+.link {
+  text-decoration: none;
+  color: #000;
+  transition: all 0.2s linear;
+}
+
+.g-btn {
+  color: #26222f;
+  background-color: #fff;
+  border: 1px solid #26222f;
+  border-radius: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 15px 26px;
+  text-align: center;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+    background-color: #26222f;
+  }
+}
