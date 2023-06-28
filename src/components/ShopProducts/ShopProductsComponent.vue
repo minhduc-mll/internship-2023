@@ -42,30 +42,52 @@
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import ProductCardComponent from "@/components/ProductCard/ProductCardComponent.vue";
 import type { Ref } from "vue";
-import type { Product } from "@/models/base.model";
-import { ApiConst } from "@/const/api.const";
 import { PathConst } from "@/const/path.const";
+import { useProductsStore } from "@/stores/products.store";
 
-const products = ApiConst.products;
 const productsNav = PathConst.shop.name;
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public products: Ref<Array<Product>> = this.ref(products);
+    public productsStore = useProductsStore();
     public pageSize: Ref<number> = this.ref(18);
     public pageNumber: Ref<number> = this.ref(1);
 
     public constructor() {
       super();
+
+      this.onBeforeMount(() => {
+        this.productsStore.getProducts();
+      });
     }
 
+    public products = this.computed(() => {
+      return this.getFilterProducts();
+    });
+
+    public getFilterProducts = () => {
+      const allProducts = this.productsStore.products;
+      const filterProducts = allProducts.filter((_, index) => {
+        return index >= this.getStartPage() - 1 && index < this.getEndPage();
+      });
+      return filterProducts;
+    };
+
+    public getStartPage = () => {
+      return (this.pageNumber.value - 1) * this.pageSize.value + 1;
+    };
+
+    public getEndPage = () => {
+      return this.pageNumber.value * this.pageSize.value;
+    };
+
     public getTotalProducts = () => {
-      return this.products.value.length;
+      return this.productsStore.products.length || 0;
     };
 
     public getResultCount = () => {
-      const start = (this.pageNumber.value - 1) * app.pageSize.value + 1;
-      const end = start + this.pageSize.value - 1;
+      const start = this.getStartPage();
+      const end = this.getEndPage();
       const total = this.getTotalProducts();
       return `${start}-${total > end ? end : total}`;
     };

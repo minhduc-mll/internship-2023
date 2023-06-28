@@ -17,7 +17,7 @@
           </span>
           <span class="amount-ins">
             <span class="currency-symbol">$</span>
-            <span>{{ product.deals.toFixed(2) }}</span>
+            <span>{{ (product.price * 0.8).toFixed(2) }}</span>
           </span>
         </div>
       </li>
@@ -27,17 +27,37 @@
 
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
+import { useProductsStore } from "@/stores/products.store";
+import type { ProductModel } from "@/models/product.model";
 import type { Ref } from "vue";
-import type { Product } from "@/models/base.model";
-import { ApiConst } from "@/const/api.const";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public products: Ref<Array<Product>> = this.ref(ApiConst.dealsProducts);
+    public productsStore = useProductsStore();
+
+    public products: Ref<Array<ProductModel>> = this.ref([]);
 
     public constructor() {
       super();
+
+      this.getDealsProducts();
     }
+
+    public getDealsProducts = async (start: number = 0, limit: number = 5) => {
+      try {
+        const products = (await this.productsStore.getAllProducts()) || [];
+        const filterProducts = products
+          .filter((value) => {
+            return value.deals;
+          })
+          .filter((_, index) => {
+            return index >= start && index < start + limit;
+          });
+        this.products.value = filterProducts;
+      } catch (error) {
+        console.log(error);
+      }
+    };
   },
 );
 </script>

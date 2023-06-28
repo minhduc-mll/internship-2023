@@ -14,14 +14,14 @@
           <i class="bi bi-star"></i>
         </span>
       </div>
-      <div class="product-price" v-if="app.product.deals > 0">
+      <div class="product-price" v-if="app.product.deals">
         <span class="amount-del">
           <span class="currency-symbol">$</span>
           <span>{{ app.product.price.toFixed(2) }}</span>
         </span>
         <span class="amount-ins">
           <span class="currency-symbol">$</span>
-          <span>{{ app.product.deals.toFixed(2) }}</span>
+          <span>{{ (app.product.price * 0.8).toFixed(2) }}</span>
         </span>
       </div>
       <div class="product-price" v-else>
@@ -31,7 +31,7 @@
         </span>
       </div>
     </div>
-    <div class="product-onsale" v-if="app.product.deals > 0">
+    <div class="product-onsale" v-if="app.product.deals">
       <span>Sale!</span>
     </div>
     <div class="add_to_cart">
@@ -46,16 +46,18 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import type { ProductProps } from "./ProductCardComponent";
-import type { Product } from "@/models/base.model";
+import type { ProductModel } from "@/models/product.model";
 
 const props = defineProps<ProductProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public product: Product = this.reactive(props.product);
+    public product: ProductModel = this.reactive(props.product);
 
     public constructor() {
       super();
+
+      console.log(this.product);
     }
   },
 );

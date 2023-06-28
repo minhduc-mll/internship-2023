@@ -2,6 +2,14 @@ import type { Product } from "@/models/base.model";
 import type { CartProduct } from "@/models/base.model";
 
 export class ApiConst {
+  public static endpoints = {
+    getProducts: "/products",
+  };
+
+  public static status = {
+    ok: 200,
+  };
+
   public static product: Product = {
     id: 1,
     image:
@@ -198,3 +206,5 @@ export class ApiConst {
     },
   ];
 }
+
+export type GetApi = { uri: string };
