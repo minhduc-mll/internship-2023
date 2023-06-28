@@ -3,7 +3,7 @@
     <h1 class="cat-title">Categories</h1>
     <ul class="cat-list">
       <li class="cat-item" v-for="category of app.categories.value" :key="category.id">
-        <router-link :to="category.url" class="item-name">{{ category.name }}</router-link>
+        <div class="item-name" @click="$emit('activeCategory', category.name)">{{ category.name }}</div>
         <span class="count">({{ category.size }})</span>
       </li>
     </ul>
@@ -22,6 +22,7 @@ const app = defineClassComponent(
       super();
 
       this.onBeforeMount(() => {
+        console.log(3);
         this.productsStore.getCategories();
       });
     }
@@ -42,6 +43,7 @@ const app = defineClassComponent(
 
   & .cat-title {
     font-size: 18px;
+    font-weight: 600;
     margin-bottom: 16px;
   }
 
@@ -60,8 +62,7 @@ const app = defineClassComponent(
       padding: 2px 0;
 
       & .item-name {
-        color: #6a5950;
-        text-decoration: none;
+        cursor: pointer;
       }
     }
   }

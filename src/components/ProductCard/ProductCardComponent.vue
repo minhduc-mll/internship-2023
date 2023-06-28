@@ -56,8 +56,6 @@ const app = defineClassComponent(
 
     public constructor() {
       super();
-
-      console.log(this.product);
     }
   },
 );
@@ -78,6 +76,7 @@ const app = defineClassComponent(
 
       & img {
         display: block;
+        width: 100%;
         max-width: 100%;
         height: auto;
         margin-bottom: 8px;
@@ -189,8 +188,12 @@ const app = defineClassComponent(
       border: none;
       outline: none;
       border-radius: 100%;
-      padding: 5px;
+      padding: 0px;
       box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
+
+      & i {
+        font-size: 20px;
+      }
     }
 
     &:hover {

@@ -2,12 +2,12 @@
   <BaseLayout>
     <div class="shop-content">
       <div class="secondary">
-        <ShopCategoriesComponent></ShopCategoriesComponent>
+        <ShopCategoriesComponent @active-category="app.activeCategory"></ShopCategoriesComponent>
         <ShopFiltersComponent></ShopFiltersComponent>
         <ShopDealsComponent></ShopDealsComponent>
       </div>
       <div class="primary">
-        <ShopProductsComponent></ShopProductsComponent>
+        <ShopProductsComponent :category="app.category.value"></ShopProductsComponent>
       </div>
     </div>
   </BaseLayout>
@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
+import type { Ref } from "vue";
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import ShopCategoriesComponent from "@/components/ShopCategories/ShopCategoriesComponent.vue";
 import ShopFiltersComponent from "@/components/ShopFilters/ShopFiltersComponent.vue";
@@ -23,9 +24,15 @@ import ShopProductsComponent from "@/components/ShopProducts/ShopProductsCompone
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
+    public category: Ref<string> = this.ref("Shop");
+
     public constructor() {
       super();
     }
+
+    public activeCategory = (category: string) => {
+      this.category.value = category;
+    };
   },
 );
 </script>

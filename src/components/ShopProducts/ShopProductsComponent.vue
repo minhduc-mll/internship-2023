@@ -1,8 +1,12 @@
 <template>
   <div class="products">
-    <div class="products-nav">Home / {{ productsNav }}</div>
+    <div class="products-nav">
+      <router-link to="/" class="link">Home</router-link>
+      <span> / </span>
+      <router-link to="" class="link">{{ app.category.value }}</router-link>
+    </div>
     <div class="products-header">
-      <h1 class="header-title">Shop</h1>
+      <h1 class="header-title">{{ app.category.value }}</h1>
     </div>
     <div class="products-filter">
       <div class="filter-count">Showing {{ app.getResultCount() }} of {{ app.getTotalProducts() }} results</div>
@@ -24,14 +28,24 @@
     </ul>
     <div class="products-pagination">
       <ul class="page-numbers">
-        <li>
-          <button class="page-numbers active">1</button>
+        <li v-if="app.pageNumber.value > 1">
+          <button class="previous page-numbers" @click="app.pageNumber.value--">
+            <i class="bi bi-arrow-left"></i>
+          </button>
         </li>
-        <li>
-          <button class="page-numbers">2</button>
+        <li v-for="page in app.totalPage.value" :key="page">
+          <button
+            class="page-numbers"
+            :class="{ active: app.pageNumber.value === page }"
+            @click="app.pageNumber.value = page"
+          >
+            {{ page }}
+          </button>
         </li>
-        <li>
-          <button class="next page-numbers">-></button>
+        <li v-if="app.pageNumber.value < app.totalPage.value">
+          <button class="next page-numbers" @click="app.pageNumber.value++">
+            <i class="bi bi-arrow-right"></i>
+          </button>
         </li>
       </ul>
     </div>
@@ -41,11 +55,11 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import ProductCardComponent from "@/components/ProductCard/ProductCardComponent.vue";
+import type { ShopProductsProps } from "./ShopProductsComponent";
 import type { Ref } from "vue";
-import { PathConst } from "@/const/path.const";
 import { useProductsStore } from "@/stores/products.store";
 
-const productsNav = PathConst.shop.name;
+const props = defineProps<ShopProductsProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
@@ -62,7 +76,21 @@ const app = defineClassComponent(
     }
 
     public products = this.computed(() => {
-      return this.getFilterProducts();
+      const allProducts = this.productsStore.products;
+      const filterProducts = allProducts.filter((_, index) => {
+        return index >= this.getStartPage() - 1 && index < this.getEndPage();
+      });
+      return filterProducts;
+    });
+
+    public category = this.computed(() => {
+      this.productsStore.getProductsCategory(props.category);
+      return props.category;
+    });
+
+    public totalPage = this.computed(() => {
+      const totalPage = Math.ceil(this.getTotalProducts() / this.pageSize.value);
+      return totalPage;
     });
 
     public getFilterProducts = () => {
@@ -115,7 +143,7 @@ const app = defineClassComponent(
     & .header-title {
       color: #6a5950;
       font-size: 136px;
-      font-weight: 400;
+      font-weight: 600;
     }
   }
 
