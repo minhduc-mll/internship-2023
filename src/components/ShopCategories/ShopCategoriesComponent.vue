@@ -1,6 +1,6 @@
 <template>
   <div class="categories">
-    <h1 class="cat-title">Categories</h1>
+    <h1 class="cat-title" @click="$emit('activeCategory', 'Shop')">Categories</h1>
     <ul class="cat-list">
       <li class="cat-item" v-for="category of app.categories.value" :key="category.id">
         <div class="item-name" @click="$emit('activeCategory', category.name)">{{ category.name }}</div>
@@ -40,6 +40,7 @@ const app = defineClassComponent(
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 16px;
+    cursor: pointer;
   }
 
   & .cat-list {

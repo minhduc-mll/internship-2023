@@ -8,8 +8,8 @@
           type="range"
           class="range-input"
           step="1"
-          min="40"
-          max="200"
+          :min="app.min"
+          :max="app.max"
           tabindex="0"
           v-model="app.amountStart.value"
           style="z-index: 20"
@@ -18,8 +18,8 @@
           type="range"
           class="range-input"
           step="1"
-          min="40"
-          max="200"
+          :min="app.min"
+          :max="app.max"
           tabindex="0"
           v-model="app.amountEnd.value"
           style="z-index: 20"
@@ -49,8 +49,10 @@ import type { Ref } from "vue";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public amountStart: Ref<number> = this.ref(40);
-    public amountEnd: Ref<number> = this.ref(200);
+    public min = 0;
+    public max = 1000;
+    public amountStart: Ref<number> = this.ref(this.min);
+    public amountEnd: Ref<number> = this.ref(this.max);
 
     public constructor() {
       super();

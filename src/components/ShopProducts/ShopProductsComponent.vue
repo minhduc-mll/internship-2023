@@ -9,20 +9,21 @@
       <h1 class="header-title">{{ app.category.value }}</h1>
     </div>
     <div class="products-filter">
-      <div class="filter-count">Showing {{ app.getResultCount() }} of {{ app.getTotalProducts() }} results</div>
-      <form class="filter-ordering">
-        <select name="orderby" class="orderby">
-          <option value="menu_order" selected>Default sorting</option>
-          <option value="popularity">Sort by popularity</option>
-          <option value="rating">Sort by average rating</option>
-          <option value="date">Sort by latest</option>
-          <option value="price">Sort by price: low to high</option>
-          <option value="price-desc">Sort by price: high to low</option>
-        </select>
-      </form>
+      <div class="filter-count">Showing {{ app.getResultCount() }} of {{ app.totalProducts.value }} results</div>
+      <select name="orderby" class="orderby" v-model="app.sortedBy.value">
+        <template v-for="option of app.sortedOptions" :key="option.id">
+          <option
+            :value="option.value"
+            :selected="app.sortedBy.value === option.value"
+            @click="app.sortedBy.value = option.value"
+          >
+            {{ option.title }}
+          </option>
+        </template>
+      </select>
     </div>
     <ul class="products-list">
-      <li class="products-item" v-for="product of app.products.value" :key="product.id">
+      <li class="products-item" v-for="product of app.filterProducts.value" :key="product.id">
         <ProductCardComponent :product="product"></ProductCardComponent>
       </li>
     </ul>
@@ -65,45 +66,98 @@ const props = defineProps<ShopProductsProps>();
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
+    public sortedOptions = [
+      { id: 1, value: "default", title: "Default sorting" },
+      { id: 2, value: "popularity", title: "Sort by popularity" },
+      { id: 3, value: "rating", title: "Sort by average rating" },
+      { id: 4, value: "lastest", title: "Sort by latest" },
+      { id: 5, value: "price-asc", title: "Sort by price: low to high" },
+      { id: 6, value: "price-desc", title: "Sort by price: high to low" },
+    ];
     public products: Ref<Array<ProductModel>> = this.ref([]);
     public pageSize: Ref<number> = this.ref(18);
     public pageNumber: Ref<number> = this.ref(1);
+    public sortedBy: Ref<string> = this.ref(this.sortedOptions[0].value);
 
     public constructor() {
       super();
-
-      // this.onBeforeMount(() => {
-      //   this.productsStore.getProducts();
-      // });
     }
 
-    public productsWatcher = this.watch(
-      () => this.productsStore.products,
-      (products) => {
-        const allProducts = products;
-        const filterProducts = allProducts.filter((_, index) => {
-          return index >= this.getStartPage() - 1 && index < this.getEndPage();
-        });
-        this.products.value = filterProducts;
-      },
-    );
-
     public category = this.computed(() => {
-      this.productsStore.getProductsCategory(props.category);
       return props.category;
     });
 
+    public filterProducts = this.computed(() => {
+      let products = this.products.value;
+      if (this.sortedBy.value === "default") {
+        products = this.getSortedProducts(products, "id");
+      } else if (this.sortedBy.value === "popularity") {
+        // products = this.getSortedProducts(products, "");
+      } else if (this.sortedBy.value === "rating") {
+        products = this.getSortedProducts(products, "star", "desc");
+      } else if (this.sortedBy.value === "lastest") {
+        // products = this.getSortedProducts(products, "createAt");
+      } else if (this.sortedBy.value === "price-asc") {
+        products = this.getSortedProducts(products, "price");
+      } else if (this.sortedBy.value === "price-desc") {
+        products = this.getSortedProducts(products, "price", "desc");
+      } else {
+        products = this.getSortedProducts(products, "title");
+      }
+      return this.getFilterProducts(products);
+    });
+
+    public totalProducts = this.computed(() => {
+      return this.products.value.length || 0;
+    });
+
     public totalPage = this.computed(() => {
-      const totalPage = Math.ceil(this.getTotalProducts() / this.pageSize.value);
+      const totalPage = Math.ceil(this.totalProducts.value / this.pageSize.value);
       return totalPage;
     });
 
-    public getFilterProducts = () => {
-      const allProducts = this.productsStore.products;
-      const filterProducts = allProducts.filter((_, index) => {
-        return index >= this.getStartPage() - 1 && index < this.getEndPage();
-      });
-      return filterProducts;
+    public productsWatcher = this.watch(
+      [() => this.category.value, () => this.productsStore.products],
+      ([category, products]) => {
+        const productsCategory = this.getProductsCategory(products, category);
+        this.products.value = productsCategory;
+      },
+    );
+
+    public getProductsCategory = (products: Array<ProductModel>, category: string = "") => {
+      if (products.length) {
+        if (category !== "" && !category.includes("Shop")) {
+          return products.filter((value) => {
+            return value.category === category;
+          });
+        }
+        return products;
+      }
+      return [];
+    };
+
+    public getFilterProducts = (products: Array<ProductModel>) => {
+      if (products.length) {
+        return products.filter((_, index) => {
+          return index >= this.getStartPage() - 1 && index < this.getEndPage();
+        });
+      }
+      return [];
+    };
+
+    public getSortedProducts = (products: Array<any>, key = "id" as keyof ProductModel, sortDir: string = "asc") => {
+      if (products.length) {
+        if (sortDir === "desc") {
+          return products.sort((a, b) => {
+            return b[key] - a[key];
+          });
+        } else {
+          return products.sort((a, b) => {
+            return a[key] - b[key];
+          });
+        }
+      }
+      return [];
     };
 
     public getStartPage = () => {
@@ -114,15 +168,10 @@ const app = defineClassComponent(
       return this.pageNumber.value * this.pageSize.value;
     };
 
-    public getTotalProducts = () => {
-      console.log(this.productsStore.products.length);
-      return this.productsStore.products.length || 0;
-    };
-
     public getResultCount = () => {
       const start = this.getStartPage();
       const end = this.getEndPage();
-      const total = this.getTotalProducts();
+      const total = this.totalProducts.value;
       return `${start}-${total > end ? end : total}`;
     };
   },
@@ -163,14 +212,12 @@ const app = defineClassComponent(
       line-height: 1;
     }
 
-    & .filter-ordering {
-      & .orderby {
-        background-color: transparent;
-        color: #666;
-        border: none;
-        padding: 12px;
-        box-shadow: none;
-      }
+    & .orderby {
+      background-color: transparent;
+      color: #666;
+      border: none;
+      padding: 12px;
+      box-shadow: none;
     }
   }
 

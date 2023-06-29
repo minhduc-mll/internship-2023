@@ -41,72 +41,43 @@ export const useProductsStore = defineClassStore(
       }
     };
 
-    public getProducts = async () => {
-      try {
-        const products = (await this.getAllProducts()) || [];
-        this.products.value = products;
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    public getProductsCategory = async (category: string) => {
-      try {
-        const products = (await this.getAllProducts()) || [];
-        const filterProducts = products.filter((value) => {
-          return value.category === category;
-        });
-        this.products.value = filterProducts;
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     public getCategories = async (products: Array<any>) => {
-      try {
-        const productsCategories = products || [];
-        const categories: Array<CategoryModel> = [];
-        let id = 0;
-        productsCategories.forEach((product) => {
-          const existing = categories.filter((value) => {
-            return value.name == product.category;
-          });
+      const productsCategories = products || [];
+      const categories: Array<CategoryModel> = [];
+      let id = 0;
+      productsCategories.forEach((product) => {
+        const existing = categories.filter((value) => {
+          return value.name == product.category;
+        });
 
-          if (existing.length) {
-            const existingIndex = categories.indexOf(existing[0]);
-            categories[existingIndex].size++;
-          } else {
-            categories.push({
-              id: id,
-              name: product.category,
-              size: 1,
-              url: "",
-            });
-            id++;
-          }
-        });
-        this.categories.value = categories.map((category) => {
-          return new CategoryModel(category);
-        });
-      } catch (error) {
-        console.log(error);
-      }
+        if (existing.length) {
+          const existingIndex = categories.indexOf(existing[0]);
+          categories[existingIndex].size++;
+        } else {
+          categories.push({
+            id: id,
+            name: product.category,
+            size: 1,
+            url: "",
+          });
+          id++;
+        }
+      });
+      this.categories.value = categories.map((category) => {
+        return new CategoryModel(category);
+      });
     };
 
     public getDealsProducts = async (products: Array<any>, start: number = 0, limit: number = 5) => {
-      try {
-        const productsDeals = products || [];
-        const filterProducts = productsDeals
-          .filter((value) => {
-            return value.deals;
-          })
-          .filter((_, index) => {
-            return index >= start && index < start + limit;
-          });
-        this.dealsProducts.value = filterProducts;
-      } catch (error) {
-        console.log(error);
-      }
+      const productsDeals = products || [];
+      const filterProducts = productsDeals
+        .filter((value) => {
+          return value.deals;
+        })
+        .filter((_, index) => {
+          return index >= start && index < start + limit;
+        });
+      this.dealsProducts.value = filterProducts;
     };
   },
 );
