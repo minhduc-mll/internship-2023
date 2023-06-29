@@ -18,9 +18,18 @@ export class PathConst {
     },
   };
 
-  public static shop: Route = {
-    path: "/shop",
-    name: "Shop",
+  // public static shop: Route = {
+  //   path: "/shop",
+  //   name: "Shop",
+  //   component: ShopViewVue,
+  //   meta: {
+  //     title: "Shop",
+  //   },
+  // };
+
+  public static category: Route = {
+    path: "/:category",
+    name: "Category",
     component: ShopViewVue,
     meta: {
       title: "Shop",
@@ -55,7 +64,7 @@ export class PathConst {
   };
 
   public static product: Route = {
-    path: "/product",
+    path: "/product/:productId",
     name: "Product",
     component: ProductViewVue,
     meta: {

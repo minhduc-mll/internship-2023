@@ -2,12 +2,12 @@
   <BaseLayout>
     <div class="shop-content">
       <div class="secondary">
-        <ShopCategoriesComponent @active-category="app.activeCategory"></ShopCategoriesComponent>
+        <ShopCategoriesComponent></ShopCategoriesComponent>
         <ShopFiltersComponent></ShopFiltersComponent>
         <ShopDealsComponent></ShopDealsComponent>
       </div>
       <div class="primary">
-        <ShopProductsComponent :category="app.category.value"></ShopProductsComponent>
+        <ShopProductsComponent></ShopProductsComponent>
       </div>
     </div>
   </BaseLayout>
@@ -15,7 +15,6 @@
 
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
-import type { Ref } from "vue";
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import ShopCategoriesComponent from "@/components/ShopCategories/ShopCategoriesComponent.vue";
 import ShopFiltersComponent from "@/components/ShopFilters/ShopFiltersComponent.vue";
@@ -26,18 +25,31 @@ import { useProductsStore } from "@/stores/products.store";
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
-    public category: Ref<string> = this.ref("Shop");
 
     public constructor() {
       super();
 
-      this.onBeforeMount(() => {
-        this.productsStore.getAllProducts();
+      this.productsStore.category = this.upperCaseFirstLetter(this.route.params.category.toString());
+
+      this.onBeforeMount(async () => {
+        try {
+          await this.productsStore.fetchAllProducts();
+        } catch (error) {
+          console.log(error);
+        }
       });
     }
 
-    public activeCategory = (category: string) => {
-      this.category.value = category;
+    public upperCaseFirstLetter = (data: string) => {
+      let words = data.toLowerCase().split("-");
+      words = words.map((word) => {
+        return word[0].toUpperCase() + word.slice(1, word.length).toLowerCase();
+      });
+      return words.join(" ");
+    };
+
+    public lowerCaseFirstLetter = (data: string) => {
+      return data.toLowerCase().split(" ").join("-");
     };
   },
 );

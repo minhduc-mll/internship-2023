@@ -3,8 +3,8 @@
     <div class="product-content">
       <div class="product-container">
         <div class="product-gallery">
-          <img :src="product.image" :alt="product.title" class="gallery-thumbnail" />
-          <div class="gallery-onsale" v-if="app.product.deals > 0">
+          <img :src="app.product.value.image" :alt="app.product.value.title" class="gallery-thumbnail" />
+          <div class="gallery-onsale" v-if="app.product.value.deals">
             <span>Sale!</span>
           </div>
           <button class="gallery-trigger">
@@ -12,29 +12,28 @@
           </button>
         </div>
         <div class="product-summary">
-          <router-link to="" class="link summary-category">Accessories</router-link>
-          <h2 class="summary-title">{{ app.product.title }}</h2>
-          <div class="summary-price" v-if="app.product.deals > 0">
+          <router-link :to="'/' + app.product.value.category.toLowerCase()" class="link summary-category">
+            {{ app.product.value.category }}
+          </router-link>
+          <h2 class="summary-title">{{ app.product.value.title }}</h2>
+          <div class="summary-price" v-if="app.product.value.deals">
             <span class="amount-del">
               <span class="currency-symbol">$</span>
-              <span>{{ app.product.price.toFixed(2) }}</span>
+              <span>{{ app.product.value.price.toFixed(2) }}</span>
             </span>
             <span class="amount-ins">
               <span class="currency-symbol">$</span>
-              <span>{{ app.product.deals.toFixed(2) }}</span>
+              <span>{{ (app.product.value.price * 0.8).toFixed(2) }}</span>
             </span>
           </div>
           <div class="summary-price" v-else>
             <span class="amount-ins">
               <span class="currency-symbol">$</span>
-              <span>{{ app.product.price.toFixed(2) }}</span>
+              <span>{{ app.product.value.price.toFixed(2) }}</span>
             </span>
           </div>
           <div class="summary-detail">
-            Cras in blandit semper eget interdum lacus ultrices ultricies malesuada magna nullam velit, elit scelerisque
-            imperdiet natoque mi velit volutpat quis nibh sagittis orci sem orci sit feugiat mauris, auctor mauris
-            malesuada lectus ut dictum massa turpis a quis tellus aliquam amet malesuada enim ac orci leo arcu justo
-            blandit.
+            <span>{{ app.product.value.desc }}</span>
           </div>
           <form action="" class="cart">
             <div class="quantity">
@@ -45,7 +44,9 @@
           <div class="summary-meta">
             <span class="posted-in"
               >Category:
-              <router-link to="" class="product-category">Accessories</router-link>
+              <router-link :to="'/' + app.product.value.category.toLowerCase()" class="product-category">
+                {{ app.product.value.category }}
+              </router-link>
             </span>
           </div>
         </div>
@@ -55,20 +56,7 @@
             <li class="tab-description">Reviews (0)</li>
           </ul>
           <div class="tab-panel-desc">
-            <span>
-              Cras in blandit semper eget interdum lacus, enim aliquet ut quam tincidunt volutpat congue mauris nibh
-              justo, magnis amet velit nam mauris sociis amet neque mauris interdum ultrices nisi phasellus libero nunc.
-            </span>
-            <span>
-              Ut ultrices ultricies malesuada magna nullam velit, elit scelerisque imperdiet natoque mi velit volutpat
-              quis nibh sagittis orci sem orci sit feugiat mauris, auctor mauris malesuada lectus ut dictum massa turpis
-              a quis tellus aliquam amet malesuada enim ac orci leo arcu justo blandit ut eu ornare cras. Orci risus
-              magna est vitae enim sit turpis sed gravida dignissim cras dictum in metus id.
-            </span>
-            <span>
-              Venenatis sed tristique etiam risus odio sem scelerisque interdum non a tellus, fermentum cras luctus
-              felis.
-            </span>
+            <span>{{ app.product.value.desc }}</span>
           </div>
           <div class="tab-panel-review">
             <div class="comments">
@@ -94,21 +82,45 @@
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import ProductCardComponent from "@/components/ProductCard/ProductCardComponent.vue";
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
-import type { Product } from "@/models/base.model";
 import type { Ref } from "vue";
-import { ApiConst } from "@/const/api.const";
-
-const product = ApiConst.product;
-const products = ApiConst.products;
+import { ProductModel } from "@/models/product.model";
+import { useProductsStore } from "@/stores/products.store";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public product: Product = this.reactive(product);
-    public products: Ref<Array<Product>> = this.ref(products);
+    public productsStore = useProductsStore();
+    public product: Ref<ProductModel> = this.ref(new ProductModel({}));
+    public products: Ref<Array<ProductModel>> = this.ref([]);
 
     public constructor() {
       super();
+
+      this.onBeforeMount(async () => {
+        try {
+          const productId = this.route.params.productId.toString();
+          await this.productsStore.fetchProduct(productId);
+          await this.productsStore.fetchAllProducts();
+        } catch (error) {
+          console.log(error);
+        }
+      });
     }
+
+    public productWatch = this.watch(
+      () => this.productsStore.product,
+      (newProduct) => {
+        this.product.value = newProduct;
+      },
+    );
+
+    public relatedProductsWatch = this.watch(
+      [() => this.productsStore.category, () => this.productsStore.products],
+      ([category, products]) => {
+        const productSCategory = this.productsStore.getProductsByCategory(products, category);
+        const filterProducts = this.productsStore.getFilterProducts(productSCategory, 0, 8);
+        this.products.value = filterProducts;
+      },
+    );
   },
 );
 </script>
@@ -138,12 +150,11 @@ const app = defineClassComponent(
       overflow: hidden;
 
       & .gallery-thumbnail {
-        width: 720px;
-        height: 960px;
-        border: none;
-        max-width: none;
-        max-height: none;
-        object-fit: cover;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        box-shadow: none;
       }
 
       & .gallery-onsale {

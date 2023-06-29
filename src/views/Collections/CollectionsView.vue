@@ -103,6 +103,7 @@ const app = defineClassComponent(
       margin-top: 40px;
 
       & img {
+        width: 100%;
         max-width: 100%;
         height: auto;
       }

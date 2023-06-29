@@ -56,12 +56,9 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import ProductCardComponent from "@/components/ProductCard/ProductCardComponent.vue";
-import type { ShopProductsProps } from "./ShopProductsComponent";
 import type { Ref } from "vue";
 import { useProductsStore } from "@/stores/products.store";
 import type { ProductModel } from "@/models/product.model";
-
-const props = defineProps<ShopProductsProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
@@ -84,27 +81,27 @@ const app = defineClassComponent(
     }
 
     public category = this.computed(() => {
-      return props.category;
+      return this.productsStore.category;
     });
 
     public filterProducts = this.computed(() => {
       let products = this.products.value;
       if (this.sortedBy.value === "default") {
-        products = this.getSortedProducts(products, "id");
+        products = this.productsStore.getSortedProducts(products, "id");
       } else if (this.sortedBy.value === "popularity") {
         // products = this.getSortedProducts(products, "");
       } else if (this.sortedBy.value === "rating") {
-        products = this.getSortedProducts(products, "star", "desc");
+        products = this.productsStore.getSortedProducts(products, "star", "desc");
       } else if (this.sortedBy.value === "lastest") {
         // products = this.getSortedProducts(products, "createAt");
       } else if (this.sortedBy.value === "price-asc") {
-        products = this.getSortedProducts(products, "price");
+        products = this.productsStore.getSortedProducts(products, "price");
       } else if (this.sortedBy.value === "price-desc") {
-        products = this.getSortedProducts(products, "price", "desc");
+        products = this.productsStore.getSortedProducts(products, "price", "desc");
       } else {
-        products = this.getSortedProducts(products, "title");
+        products = this.productsStore.getSortedProducts(products, "title");
       }
-      return this.getFilterProducts(products);
+      return this.productsStore.getFilterProducts(products, this.getStartProduct() - 1, this.pageSize.value);
     });
 
     public totalProducts = this.computed(() => {
@@ -117,60 +114,24 @@ const app = defineClassComponent(
     });
 
     public productsWatcher = this.watch(
-      [() => this.category.value, () => this.productsStore.products],
+      [() => this.productsStore.category, () => this.productsStore.products],
       ([category, products]) => {
-        const productsCategory = this.getProductsCategory(products, category);
+        const productsCategory = this.productsStore.getProductsByCategory(products, category);
         this.products.value = productsCategory;
       },
     );
 
-    public getProductsCategory = (products: Array<ProductModel>, category: string = "") => {
-      if (products.length) {
-        if (category !== "" && !category.includes("Shop")) {
-          return products.filter((value) => {
-            return value.category === category;
-          });
-        }
-        return products;
-      }
-      return [];
-    };
-
-    public getFilterProducts = (products: Array<ProductModel>) => {
-      if (products.length) {
-        return products.filter((_, index) => {
-          return index >= this.getStartPage() - 1 && index < this.getEndPage();
-        });
-      }
-      return [];
-    };
-
-    public getSortedProducts = (products: Array<any>, key = "id" as keyof ProductModel, sortDir: string = "asc") => {
-      if (products.length) {
-        if (sortDir === "desc") {
-          return products.sort((a, b) => {
-            return b[key] - a[key];
-          });
-        } else {
-          return products.sort((a, b) => {
-            return a[key] - b[key];
-          });
-        }
-      }
-      return [];
-    };
-
-    public getStartPage = () => {
+    public getStartProduct = () => {
       return (this.pageNumber.value - 1) * this.pageSize.value + 1;
     };
 
-    public getEndPage = () => {
+    public getEndProduct = () => {
       return this.pageNumber.value * this.pageSize.value;
     };
 
     public getResultCount = () => {
-      const start = this.getStartPage();
-      const end = this.getEndPage();
+      const start = this.getStartProduct();
+      const end = this.getEndProduct();
       const total = this.totalProducts.value;
       return `${start}-${total > end ? end : total}`;
     };

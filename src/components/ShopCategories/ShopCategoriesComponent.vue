@@ -1,9 +1,9 @@
 <template>
   <div class="categories">
-    <h1 class="cat-title" @click="$emit('activeCategory', 'Shop')">Categories</h1>
+    <h1 class="cat-title" @click="app.setCategory('Shop')">Categories</h1>
     <ul class="cat-list">
       <li class="cat-item" v-for="category of app.categories.value" :key="category.id">
-        <div class="item-name" @click="$emit('activeCategory', category.name)">{{ category.name }}</div>
+        <div class="item-name" @click="app.setCategory(category.name)">{{ category.name }}</div>
         <span class="count">({{ category.size }})</span>
       </li>
     </ul>
@@ -23,6 +23,10 @@ const app = defineClassComponent(
     }
 
     public categories = this.computed(() => this.productsStore.categories);
+
+    public setCategory = (name: string) => {
+      this.productsStore.category = name;
+    };
   },
 );
 </script>

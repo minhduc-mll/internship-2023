@@ -3,7 +3,8 @@ import type { CartProduct } from "@/models/base.model";
 
 export class ApiConst {
   public static endpoints = {
-    getProducts: "/products",
+    getAllProducts: "/products",
+    getProduct: "/products/:productId",
   };
 
   public static status = {
