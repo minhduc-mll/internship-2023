@@ -35,5 +35,3 @@ test/e2e-test-results
 test/unit-coverage
 
 /.devbox
-
-.env
