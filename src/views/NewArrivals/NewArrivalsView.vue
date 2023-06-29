@@ -53,7 +53,7 @@ const app = defineClassComponent(
       super();
 
       this.onBeforeMount(() => {
-        this.productsStore.getAllProducts();
+        this.productsStore.fetchAllProducts();
       });
     }
 
