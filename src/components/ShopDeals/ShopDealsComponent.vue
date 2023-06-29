@@ -28,36 +28,16 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import { useProductsStore } from "@/stores/products.store";
-import type { ProductModel } from "@/models/product.model";
-import type { Ref } from "vue";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
 
-    public products: Ref<Array<ProductModel>> = this.ref([]);
-
     public constructor() {
       super();
-
-      this.getDealsProducts();
     }
 
-    public getDealsProducts = async (start: number = 0, limit: number = 5) => {
-      try {
-        const products = (await this.productsStore.getAllProducts()) || [];
-        const filterProducts = products
-          .filter((value) => {
-            return value.deals;
-          })
-          .filter((_, index) => {
-            return index >= start && index < start + limit;
-          });
-        this.products.value = filterProducts;
-      } catch (error) {
-        console.log(error);
-      }
-    };
+    public products = this.computed(() => this.productsStore.dealsProducts);
   },
 );
 </script>

@@ -21,13 +21,19 @@ import ShopCategoriesComponent from "@/components/ShopCategories/ShopCategoriesC
 import ShopFiltersComponent from "@/components/ShopFilters/ShopFiltersComponent.vue";
 import ShopDealsComponent from "@/components/ShopDeals/ShopDealsComponent.vue";
 import ShopProductsComponent from "@/components/ShopProducts/ShopProductsComponent.vue";
+import { useProductsStore } from "@/stores/products.store";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
+    public productsStore = useProductsStore();
     public category: Ref<string> = this.ref("Shop");
 
     public constructor() {
       super();
+
+      this.onBeforeMount(() => {
+        this.productsStore.getAllProducts();
+      });
     }
 
     public activeCategory = (category: string) => {

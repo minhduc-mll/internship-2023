@@ -13,6 +13,7 @@ export const useProductsStore = defineClassStore(
 
     public products: Ref<Array<ProductModel>> = this.ref([]);
     public categories: Ref<Array<CategoryModel>> = this.ref([]);
+    public dealsProducts: Ref<Array<ProductModel>> = this.ref([]);
 
     public getAllProducts = async () => {
       try {
@@ -29,6 +30,9 @@ export const useProductsStore = defineClassStore(
             };
             return new ProductModel(product);
           });
+          this.products.value = products;
+          this.getCategories(products);
+          this.getDealsProducts(products);
           return products;
         }
         return [];
@@ -58,12 +62,12 @@ export const useProductsStore = defineClassStore(
       }
     };
 
-    public getCategories = async () => {
+    public getCategories = async (products: Array<any>) => {
       try {
-        const products = (await this.getAllProducts()) || [];
+        const productsCategories = products || [];
         const categories: Array<CategoryModel> = [];
         let id = 0;
-        products.forEach((product) => {
+        productsCategories.forEach((product) => {
           const existing = categories.filter((value) => {
             return value.name == product.category;
           });
@@ -84,6 +88,22 @@ export const useProductsStore = defineClassStore(
         this.categories.value = categories.map((category) => {
           return new CategoryModel(category);
         });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    public getDealsProducts = async (products: Array<any>, start: number = 0, limit: number = 5) => {
+      try {
+        const productsDeals = products || [];
+        const filterProducts = productsDeals
+          .filter((value) => {
+            return value.deals;
+          })
+          .filter((_, index) => {
+            return index >= start && index < start + limit;
+          });
+        this.dealsProducts.value = filterProducts;
       } catch (error) {
         console.log(error);
       }

@@ -58,30 +58,35 @@ import ProductCardComponent from "@/components/ProductCard/ProductCardComponent.
 import type { ShopProductsProps } from "./ShopProductsComponent";
 import type { Ref } from "vue";
 import { useProductsStore } from "@/stores/products.store";
+import type { ProductModel } from "@/models/product.model";
 
 const props = defineProps<ShopProductsProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
+    public products: Ref<Array<ProductModel>> = this.ref([]);
     public pageSize: Ref<number> = this.ref(18);
     public pageNumber: Ref<number> = this.ref(1);
 
     public constructor() {
       super();
 
-      this.onBeforeMount(() => {
-        this.productsStore.getProducts();
-      });
+      // this.onBeforeMount(() => {
+      //   this.productsStore.getProducts();
+      // });
     }
 
-    public products = this.computed(() => {
-      const allProducts = this.productsStore.products;
-      const filterProducts = allProducts.filter((_, index) => {
-        return index >= this.getStartPage() - 1 && index < this.getEndPage();
-      });
-      return filterProducts;
-    });
+    public productsWatcher = this.watch(
+      () => this.productsStore.products,
+      (products) => {
+        const allProducts = products;
+        const filterProducts = allProducts.filter((_, index) => {
+          return index >= this.getStartPage() - 1 && index < this.getEndPage();
+        });
+        this.products.value = filterProducts;
+      },
+    );
 
     public category = this.computed(() => {
       this.productsStore.getProductsCategory(props.category);
@@ -110,6 +115,7 @@ const app = defineClassComponent(
     };
 
     public getTotalProducts = () => {
+      console.log(this.productsStore.products.length);
       return this.productsStore.products.length || 0;
     };
 

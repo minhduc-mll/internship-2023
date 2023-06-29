@@ -20,11 +20,6 @@ const app = defineClassComponent(
 
     public constructor() {
       super();
-
-      this.onBeforeMount(() => {
-        console.log(3);
-        this.productsStore.getCategories();
-      });
     }
 
     public categories = this.computed(() => this.productsStore.categories);
