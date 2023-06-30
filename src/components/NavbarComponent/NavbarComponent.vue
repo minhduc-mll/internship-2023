@@ -1,5 +1,5 @@
 <template>
-  <div class="ast-desktop-header">
+  <div class="header">
     <div class="ast-above-header-wrap">
       <span>Summer Sale. up to 40% off.</span>
     </div>
@@ -58,7 +58,9 @@ const app = defineClassComponent(
   class Component extends BaseComponent {
     public pages: Ref<Array<Page>> = this.ref([
       { id: 1, text: "Home", url: "/" },
-      { id: 2, text: "shop", url: "/todo" },
+      { id: 2, text: "Categories", url: "/categories" },
+      { id: 3, text: "NewArrivals", url: "/newarrivals" },
+      { id: 4, text: "Collections", url: "/collections" },
     ]);
     public constructor() {
       super();
@@ -69,7 +71,9 @@ const app = defineClassComponent(
 
 <style scoped lang="scss">
 @import "@/assets/scss/modules";
-.ast-desktop-header {
+.header {
+  width: 1349px;
+  height: 145px;
   & .ast-above-header-wrap {
     text-align: center;
     padding: 5px 0px 5px 0px;
