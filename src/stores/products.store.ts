@@ -4,6 +4,7 @@ import { Api } from "@/plugins/api.plugin";
 import { ApiConst } from "@/const/api.const";
 import { ProductModel } from "@/models/product.model";
 import { CategoryModel } from "@/models/category.model";
+import { PrimitiveHelper } from "@/helpers/primitive.helper";
 
 export const api = new Api();
 
@@ -13,7 +14,7 @@ export const useProductsStore = defineClassStore(
 
     public product: Ref<ProductModel> = this.ref(new ProductModel({}));
     public products: Ref<Array<ProductModel>> = this.ref([]);
-    public category: Ref<string> = this.ref("Shop");
+    public category: Ref<CategoryModel> = this.ref(new CategoryModel({}));
     public categories: Ref<Array<CategoryModel>> = this.ref([]);
     public dealsProducts: Ref<Array<ProductModel>> = this.ref([]);
 
@@ -22,13 +23,12 @@ export const useProductsStore = defineClassStore(
         const res = await api.get(ApiConst.endpoints.getAllProducts);
         if (res.status === ApiConst.status.ok) {
           const data: any[] = await res.json();
-          const products = data.map((value) => {
-            // const url = "/product/" + value.title.toLowerCase().split(" ").join("-");
-            const url = "/product/" + value.id;
+          const products = data.map((data) => {
+            const url = "/shop/" + data.category.toLowerCase() + "/" + data.title.toLowerCase().split(" ").join("-");
             const product = {
-              ...value,
-              price: parseFloat(value.price),
-              image: value.image.replace("/640/480", "/300/400"),
+              ...data,
+              price: parseFloat(data.price),
+              image: data.image.replace("/640/480", "/300/400"),
               star: 5,
               url: url,
             };
@@ -48,7 +48,7 @@ export const useProductsStore = defineClassStore(
     public getCategories = async (products: Array<any>) => {
       const productsCategories = products || [];
       const categories: Array<CategoryModel> = [];
-      let id = 0;
+      let id = 1;
       productsCategories.forEach((product) => {
         const existing = categories.filter((value) => {
           return value.name == product.category;
@@ -58,7 +58,7 @@ export const useProductsStore = defineClassStore(
           const existingIndex = categories.indexOf(existing[0]);
           categories[existingIndex].size++;
         } else {
-          const categoryUrl = "/" + product.category.toLowerCase();
+          const categoryUrl = "/shop/" + product.category.toLowerCase();
           categories.push({
             id: id,
             name: product.category,
@@ -78,8 +78,7 @@ export const useProductsStore = defineClassStore(
         const res = await api.get(ApiConst.endpoints.getProduct.replace(":productId", id));
         if (res.status === ApiConst.status.ok) {
           const data: any = await res.json();
-          // const url = "/product/" + data.title.toLowerCase().split(" ").join("-");
-          const url = "/product/" + data.id;
+          const url = "/shop/" + data.category.toLowerCase() + "/" + data.title.toLowerCase().split(" ").join("-");
           const product = {
             ...data,
             price: parseFloat(data.price),
@@ -96,29 +95,55 @@ export const useProductsStore = defineClassStore(
       }
     };
 
-    public getProductByTitle(products: Array<ProductModel>, title: string) {
+    public getProductByTitle = (products: Array<ProductModel>, title: string) => {
       if (products.length) {
         const productWithTitle = products.filter((value) => {
           return value.title === title;
         });
-        return productWithTitle[0];
+        if (productWithTitle.length) {
+          return productWithTitle[0];
+        }
       }
       return new ProductModel({});
-    }
+    };
 
-    public getCategoryByName(categories: Array<CategoryModel>, name: string) {
+    public setProductByTitle = (products: Array<ProductModel>, title: string) => {
+      let product = new ProductModel({});
+      if (products.length) {
+        const productWithTitle = products.filter((value) => {
+          return value.title === title;
+        });
+        if (productWithTitle.length) {
+          product = productWithTitle[0];
+        }
+      }
+      this.product.value = product;
+    };
+
+    public getCategoryByName = (categories: Array<CategoryModel>, name: string) => {
       if (categories.length) {
         const categoryWithName = categories.filter((value) => {
-          return value.name === name;
+          return value.name.toLowerCase() === name.toLowerCase();
         });
-        return categoryWithName[0];
+        if (categoryWithName.length) {
+          return categoryWithName[0];
+        }
       }
       return new CategoryModel({});
-    }
+    };
 
-    public setProduct(product: ProductModel) {
-      this.product.value = product;
-    }
+    public setCategoryByName = (categories: Array<CategoryModel>, name: string) => {
+      let category = new CategoryModel({});
+      if (categories.length) {
+        const categoryWithName = categories.filter((value) => {
+          return value.name.toLowerCase() === name.toLowerCase();
+        });
+        if (categoryWithName.length) {
+          category = categoryWithName[0];
+        }
+      }
+      this.category.value = category;
+    };
 
     public getProductsByCategory = (products: Array<ProductModel>, category: string = "") => {
       if (products.length) {
@@ -144,8 +169,18 @@ export const useProductsStore = defineClassStore(
       this.dealsProducts.value = filterProducts;
     };
 
-    public getFilterProducts = (products: Array<ProductModel>, start: number = 0, limit: number = 18) => {
+    public getFilterProducts = (
+      products: Array<ProductModel>,
+      start: number = 0,
+      limit: number = 18,
+      exceptProduct?: ProductModel,
+    ) => {
       if (products.length) {
+        if (exceptProduct) {
+          return products.filter((value, index) => {
+            return index >= start && index < start + limit && value !== exceptProduct;
+          });
+        }
         return products.filter((_, index) => {
           return index >= start && index < start + limit;
         });

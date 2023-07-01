@@ -12,9 +12,17 @@
           </button>
         </div>
         <div class="product-summary">
-          <router-link :to="'/' + app.product.value.category.toLowerCase()" class="link summary-category">
-            {{ app.product.value.category }}
-          </router-link>
+          <div class="products-nav">
+            <router-link to="/" class="link">Home</router-link>
+            <span> / </span>
+            <router-link to="/shop" class="link" @click="app.productsStore.setCategoryByName([], '')">Shop</router-link>
+            <template v-if="app.productsStore.category.id">
+              <span> / </span>
+              <router-link :to="app.productsStore.category.url" class="link">
+                {{ app.productsStore.category.name }}
+              </router-link></template
+            >
+          </div>
           <h2 class="summary-title">{{ app.product.value.title }}</h2>
           <div class="summary-price" v-if="app.product.value.deals">
             <span class="amount-del">
@@ -36,15 +44,13 @@
             <span>{{ app.product.value.desc }}</span>
           </div>
           <form action="" class="cart">
-            <div class="quantity">
-              <input type="number" class="quantity-input" />
-            </div>
-            <button class="g-btn add-to-card-button">Add to cart</button>
+            <input type="number" class="quantity-input" value="1" />
+            <button class="g-btn add-to-card-button" @click.prevent="">Add to cart</button>
           </form>
           <div class="summary-meta">
             <span class="posted-in"
               >Category:
-              <router-link :to="'/' + app.product.value.category.toLowerCase()" class="product-category">
+              <router-link :to="app.productsStore.category.url" class="product-category">
                 {{ app.product.value.category }}
               </router-link>
             </span>
@@ -52,13 +58,20 @@
         </div>
         <div class="product-desc">
           <ul class="product-tabs">
-            <li class="tab-description active">Description</li>
-            <li class="tab-description">Reviews (0)</li>
+            <li
+              class="tab-description"
+              :class="{ active: app.activeTab.value === tab.value }"
+              v-for="tab of app.productTabs"
+              :key="tab.id"
+              @click="app.activeTab.value = tab.value"
+            >
+              {{ tab.title }}
+            </li>
           </ul>
-          <div class="tab-panel-desc">
+          <div class="tab-panel-desc" v-if="app.activeTab.value === 'description'">
             <span>{{ app.product.value.desc }}</span>
           </div>
-          <div class="tab-panel-review">
+          <div class="tab-panel-review" v-if="app.activeTab.value === 'reviews'">
             <div class="comments">
               <span>There are no reviews yet.</span>
             </div>
@@ -85,21 +98,30 @@ import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin"
 import type { Ref } from "vue";
 import { ProductModel } from "@/models/product.model";
 import { useProductsStore } from "@/stores/products.store";
+import { PrimitiveHelper } from "@/helpers/primitive.helper";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
+    public productTabs = [
+      { id: 1, value: "description", title: "Description" },
+      { id: 2, value: "reviews", title: `Reviews (${0})` },
+    ];
     public product: Ref<ProductModel> = this.ref(new ProductModel({}));
     public products: Ref<Array<ProductModel>> = this.ref([]);
+    public activeTab: Ref<string> = this.ref("description");
 
     public constructor() {
       super();
 
       this.onBeforeMount(async () => {
         try {
-          const productId = this.route.params.productId.toString();
-          await this.productsStore.fetchProduct(productId);
           await this.productsStore.fetchAllProducts();
+          if (this.route.params) {
+            const productTitle = PrimitiveHelper.convertKebabToName(this.route.params.product.toString());
+            this.productsStore.setProductByTitle(this.productsStore.products, productTitle);
+            this.productsStore.setCategoryByName(this.productsStore.categories, this.productsStore.product.category);
+          }
         } catch (error) {
           console.log(error);
         }
@@ -116,8 +138,8 @@ const app = defineClassComponent(
     public relatedProductsWatch = this.watch(
       [() => this.productsStore.category, () => this.productsStore.products],
       ([category, products]) => {
-        const productSCategory = this.productsStore.getProductsByCategory(products, category);
-        const filterProducts = this.productsStore.getFilterProducts(productSCategory, 0, 8);
+        const productSCategory = this.productsStore.getProductsByCategory(products, category.name);
+        const filterProducts = this.productsStore.getFilterProducts(productSCategory, 0, 8, this.product.value);
         this.products.value = filterProducts;
       },
     );
@@ -134,8 +156,10 @@ const app = defineClassComponent(
   padding: 64px 75px;
 
   & .product-container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
     background-color: #fff;
-    margin: 0;
     padding: 85px 106px;
 
     & .product-gallery {
@@ -145,8 +169,6 @@ const app = defineClassComponent(
       margin-bottom: 32px;
 
       transition: all cubic-bezier(0.795, -0.035, 0, 1) 0.5s;
-      margin: 0;
-      padding: 0;
       overflow: hidden;
 
       & .gallery-thumbnail {
@@ -200,7 +222,7 @@ const app = defineClassComponent(
       margin-bottom: 32px;
       clear: none;
 
-      & .summary-category {
+      & .products-nav {
         display: block;
         line-height: 1;
         margin-bottom: 16px;
@@ -246,6 +268,53 @@ const app = defineClassComponent(
           }
         }
       }
+
+      & .summary-detail {
+        margin-bottom: 16px;
+      }
+
+      & .cart {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+
+        & .quantity-input {
+          width: 60px;
+          text-align: center;
+          min-height: 35px;
+          padding: 5px;
+          border: 1px solid #ddd;
+          color: #666;
+          background-color: #fff;
+          transition: all 0.2s linear;
+          font-size: 16px;
+          font-weight: 400;
+          line-height: 26px;
+        }
+
+        & .add-to-card-button {
+          padding: 10px 20px;
+          line-height: 1;
+        }
+      }
+
+      & .summary-meta {
+        border-top: 1px solid #ddd;
+        padding-top: 8px;
+        margin-bottom: 12px;
+
+        & .posted-in {
+          display: inline-block;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 26px;
+
+          & .product-category {
+            color: #6a5950 !important;
+            font-size: inherit;
+          }
+        }
+      }
     }
 
     & .product-desc {
@@ -254,6 +323,63 @@ const app = defineClassComponent(
       margin-bottom: 64px;
       width: 100%;
       clear: both;
+
+      & .product-tabs {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 16px;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        gap: 16px;
+
+        &::before {
+          content: " ";
+          position: absolute;
+          width: 100%;
+          height: 1px;
+          top: 0;
+          left: 0;
+          border-radius: 0;
+          background-color: #ddd;
+          z-index: 1;
+        }
+
+        & .tab-description {
+          position: relative;
+          color: #515151;
+          font-size: 16px;
+          font-weight: 700;
+          line-height: 26px;
+          padding: 8px 0;
+          cursor: pointer;
+
+          &.active {
+            z-index: 2;
+
+            &::before {
+              content: " ";
+              position: absolute;
+              width: 100%;
+              height: 3px;
+              top: 0;
+              left: 0;
+              bottom: -1px;
+              box-shadow: none;
+              border-radius: 0;
+              background-color: #6a5950;
+            }
+          }
+        }
+      }
+
+      & .tab-panel-desc,
+      .tab-panel-review {
+        font-size: 16px;
+        line-height: 26px;
+        word-wrap: break-word;
+        padding-bottom: 20px;
+      }
     }
 
     & .product-related {

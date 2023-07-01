@@ -3,10 +3,14 @@
     <div class="products-nav">
       <router-link to="/" class="link">Home</router-link>
       <span> / </span>
-      <router-link to="" class="link">{{ app.category.value }}</router-link>
+      <router-link to="/shop" class="link" @click="app.productsStore.setCategoryByName([], '')">Shop</router-link>
+      <template v-if="app.category.value.id">
+        <span> / </span>
+        <router-link to="" class="link">{{ app.category.value.name }}</router-link>
+      </template>
     </div>
     <div class="products-header">
-      <h1 class="header-title">{{ app.category.value }}</h1>
+      <h1 class="header-title">{{ app.category.value.name }}</h1>
     </div>
     <div class="products-filter">
       <div class="filter-count">Showing {{ app.getResultCount() }} of {{ app.totalProducts.value }} results</div>
@@ -116,7 +120,7 @@ const app = defineClassComponent(
     public productsWatcher = this.watch(
       [() => this.productsStore.category, () => this.productsStore.products],
       ([category, products]) => {
-        const productsCategory = this.productsStore.getProductsByCategory(products, category);
+        const productsCategory = this.productsStore.getProductsByCategory(products, category.name);
         this.products.value = productsCategory;
       },
     );

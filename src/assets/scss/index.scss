@@ -2,9 +2,18 @@
 
 * {
   box-sizing: border-box;
+}
+
+body {
   font-family: "Montserrat", sans-serif;
+  background: #fff;
   font-size: 16px;
+  font-style: normal;
   font-weight: 400;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  outline: 0;
 }
 
 h1,
@@ -30,6 +39,10 @@ a,
   color: #000 !important;
   transition: all 0.2s linear;
   cursor: pointer;
+}
+
+input {
+  outline: none;
 }
 
 .g-btn {

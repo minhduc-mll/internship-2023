@@ -9,11 +9,9 @@
             alt=""
           />
           <div class="poster-section">
-            <div class="row p-0 m-0">
-              <div class="col-6 p-0 m-0">
-                <h1 class="poster-title">New Arrivals</h1>
-              </div>
-              <div class="col-6 p-0 m-0 poster-content">
+            <div class="poster-container">
+              <h1 class="poster-title">New Arrivals</h1>
+              <div class="poster-content">
                 <div class="poster-desc">
                   <div class="divider"></div>
                   <div class="text-editor">
@@ -75,9 +73,12 @@ const app = defineClassComponent(
   background-color: #f7f7f7;
   margin: 0;
   padding: 0;
+  word-wrap: break-word;
+  clear: both;
 
   & .primary-widget {
     padding: 0 40px;
+    min-height: 480px;
 
     & .poster {
       position: relative;
@@ -94,46 +95,58 @@ const app = defineClassComponent(
 
       & img {
         width: 100%;
-        height: 100%;
+        height: 480px;
       }
 
       & .poster-section {
+        width: 100%;
+        align-content: center;
+        align-items: center;
         position: absolute;
         top: 50%;
         transform: translate(0, -50%);
-        margin: 0 36px;
 
-        & .poster-title {
-          color: #fff;
-          font-family: "Fahkwang", sans-serif;
-          font-size: 136px;
-          font-weight: 600;
-          line-height: 1;
-        }
-
-        & .poster-content {
+        & .poster-container {
           display: flex;
-          align-content: flex-end;
-          align-items: flex-end;
+          max-width: 1200px;
+          margin: auto;
 
-          & .poster-desc {
-            padding-left: 80px;
+          & .poster-title {
+            flex: 1;
+            color: #fff;
+            font-family: "Fahkwang", sans-serif;
+            font-size: 136px;
+            font-weight: 600;
+            line-height: 1;
+          }
 
-            & .divider {
-              width: 80px;
-              border-top: 2px solid #fff;
-              padding: 32px 0;
-              margin-bottom: 20px;
-            }
+          & .poster-content {
+            flex: 1;
+            display: flex;
+            align-content: flex-end;
+            align-items: flex-end;
 
-            & .text-editor {
-              margin-bottom: 22px;
-              padding: 0 120px 0 0;
+            & .poster-desc {
+              padding-left: 80px;
 
-              & span {
-                color: #fff;
-                font-size: 22px;
-                font-weight: 600;
+              & .divider {
+                width: 80px;
+                border-top: 2px solid #fff;
+                padding-top: 32px;
+                padding-bottom: 32px;
+                margin-bottom: 20px;
+              }
+
+              & .text-editor {
+                margin-bottom: 22px;
+                padding: 0 120px 0 0;
+
+                & span {
+                  color: #fff;
+                  font-size: 22px;
+                  font-weight: 600;
+                  line-height: 26px;
+                }
               }
             }
           }
@@ -143,6 +156,8 @@ const app = defineClassComponent(
   }
 
   & .secondary-widget {
+    max-width: 1200px;
+    margin: auto;
     padding: 96px 40px 40px 40px;
 
     & .products-list {

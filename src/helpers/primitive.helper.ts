@@ -1,6 +1,18 @@
 import humps from "humps";
 
 export class PrimitiveHelper {
+  public static convertNameToKebab = (data: string) => {
+    return data.toLowerCase().split(" ").join("-");
+  };
+
+  public static convertKebabToName = (data: string) => {
+    let words = data.toLowerCase().split("-");
+    words = words.map((word) => {
+      return word[0]?.toUpperCase() + word.slice(1, word.length).toLowerCase();
+    });
+    return words.join(" ");
+  };
+
   public static convertSnakeToCamel(data: string) {
     return humps.camelize(data);
   }

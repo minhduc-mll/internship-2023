@@ -18,21 +18,30 @@ export class PathConst {
     },
   };
 
-  // public static shop: Route = {
-  //   path: "/shop",
-  //   name: "Shop",
-  //   component: ShopViewVue,
-  //   meta: {
-  //     title: "Shop",
-  //   },
-  // };
-
-  public static category: Route = {
-    path: "/:category",
-    name: "Category",
+  public static shop: Route = {
+    path: "/shop",
+    name: "Shop",
     component: ShopViewVue,
     meta: {
       title: "Shop",
+    },
+  };
+
+  public static category: Route = {
+    path: "/shop/:category",
+    name: "Category",
+    component: ShopViewVue,
+    meta: {
+      title: "Category",
+    },
+  };
+
+  public static product: Route = {
+    path: "/shop/:category/:product",
+    name: "Product",
+    component: ProductViewVue,
+    meta: {
+      title: "Product",
     },
   };
 
@@ -60,15 +69,6 @@ export class PathConst {
     component: SearchResultsViewVue,
     meta: {
       title: `You Search For ${new SearchParams().get("s")}`,
-    },
-  };
-
-  public static product: Route = {
-    path: "/product/:productId",
-    name: "Product",
-    component: ProductViewVue,
-    meta: {
-      title: "Product",
     },
   };
 

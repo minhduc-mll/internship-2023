@@ -8,10 +8,10 @@ export class CategoryModel extends BaseModel implements ICategory {
 
   public constructor(data: any) {
     super();
-    this.id = data.id || -1;
-    this.name = data.name || "";
+    this.id = data.id || 0;
+    this.name = data.name || "Shop";
     this.size = data.size || 0;
-    this.url = data.url || "";
+    this.url = data.url || "/shop";
   }
 }
 

@@ -1,9 +1,11 @@
 <template>
   <div class="categories">
-    <h1 class="cat-title" @click="app.setCategory('Shop')">Categories</h1>
+    <h1 class="cat-title">Categories</h1>
     <ul class="cat-list">
       <li class="cat-item" v-for="category of app.categories.value" :key="category.id">
-        <div class="item-name" @click="app.setCategory(category.name)">{{ category.name }}</div>
+        <router-link :to="category.url" class="item-name" @click="app.setCategory(category.name)">
+          {{ category.name }}
+        </router-link>
         <span class="count">({{ category.size }})</span>
       </li>
     </ul>
@@ -24,8 +26,9 @@ const app = defineClassComponent(
 
     public categories = this.computed(() => this.productsStore.categories);
 
-    public setCategory = (name: string) => {
-      this.productsStore.category = name;
+    public setCategory = (categoryName: string) => {
+      app.productsStore.setCategoryByName(app.productsStore.categories, categoryName);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     };
   },
 );
@@ -44,7 +47,6 @@ const app = defineClassComponent(
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 16px;
-    cursor: pointer;
   }
 
   & .cat-list {

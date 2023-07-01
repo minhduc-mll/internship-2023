@@ -29,28 +29,17 @@ const app = defineClassComponent(
     public constructor() {
       super();
 
-      this.productsStore.category = this.upperCaseFirstLetter(this.route.params.category.toString());
-
       this.onBeforeMount(async () => {
         try {
           await this.productsStore.fetchAllProducts();
+          if (this.route.params) {
+            this.productsStore.setCategoryByName(this.productsStore.categories, this.route.params.category.toString());
+          }
         } catch (error) {
           console.log(error);
         }
       });
     }
-
-    public upperCaseFirstLetter = (data: string) => {
-      let words = data.toLowerCase().split("-");
-      words = words.map((word) => {
-        return word[0].toUpperCase() + word.slice(1, word.length).toLowerCase();
-      });
-      return words.join(" ");
-    };
-
-    public lowerCaseFirstLetter = (data: string) => {
-      return data.toLowerCase().split(" ").join("-");
-    };
   },
 );
 </script>
