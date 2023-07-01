@@ -121,28 +121,37 @@ const app = defineClassComponent(
             this.productsStore.setCategoryByName(this.route.params.category.toString());
           }
           if ("product" in this.route.params) {
-            const productTitle = PrimitiveHelper.convertKebabToName(this.route.params.product.toString());
-            this.productsStore.setProductByTitle(productTitle);
+            this.productsStore.setProductByTitle(this.productTitle.value);
             this.productsStore.setCategoryByName(this.productsStore.product.category);
           }
         } catch (error) {
           console.log(error);
         }
       });
+
+      document.title = this.t("title.product", { productTitle: this.product.value.title });
     }
 
+    public productTitle = this.computed(() => {
+      if ("product" in this.route.params) {
+        return PrimitiveHelper.convertKebabToName(this.route.params.product.toString());
+      }
+      return "Product";
+    });
+
     public productWatch = this.watch(
-      () => this.productsStore.product,
-      (newProduct) => {
-        this.product.value = newProduct;
+      [() => this.productsStore.product, () => this.productTitle.value],
+      ([product, productTitle]) => {
+        this.product.value = product;
+        document.title = this.t("title.product", { productTitle: productTitle });
       },
     );
 
     public relatedProductsWatch = this.watch(
-      [() => this.productsStore.category, () => this.productsStore.products],
-      ([category, products]) => {
+      [() => this.productsStore.category, () => this.productsStore.product, () => this.productsStore.products],
+      ([category, product]) => {
         const productSCategory = this.productsStore.getProductsByCategory(category.name);
-        const filterProducts = this.productsStore.getFilterProducts(productSCategory, 0, 8, this.product.value);
+        const filterProducts = this.productsStore.getFilterProducts(productSCategory, 0, 8, product);
         this.products.value = filterProducts;
       },
     );

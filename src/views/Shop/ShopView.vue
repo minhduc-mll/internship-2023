@@ -21,6 +21,7 @@ import ShopFiltersComponent from "@/components/ShopFilters/ShopFiltersComponent.
 import ShopDealsComponent from "@/components/ShopDeals/ShopDealsComponent.vue";
 import ShopProductsComponent from "@/components/ShopProducts/ShopProductsComponent.vue";
 import { useProductsStore } from "@/stores/products.store";
+import { PrimitiveHelper } from "@/helpers/primitive.helper";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
@@ -32,15 +33,32 @@ const app = defineClassComponent(
       this.onBeforeMount(async () => {
         try {
           await this.productsStore.fetchAllProducts();
-          if ("category" in this.route.params) {
-            const categoryName = this.route.params.category.toString();
-            this.productsStore.setCategoryByName(categoryName);
-          }
+          this.productsStore.setCategoryByName(this.categoryName.value);
         } catch (error) {
           console.log(error);
         }
       });
+
+      if (this.categoryName.value) {
+        document.title = this.t("title.category", { categoryName: this.categoryName.value });
+      }
     }
+
+    public categoryName = this.computed(() => {
+      if ("category" in this.route.params) {
+        return PrimitiveHelper.convertKebabToName(this.route.params.category.toString());
+      }
+      return "";
+    });
+
+    public categoryNameWatcher = this.watch(
+      () => this.categoryName.value,
+      (value) => {
+        if (value) {
+          document.title = this.t("title.category", { categoryName: value });
+        }
+      },
+    );
   },
 );
 </script>

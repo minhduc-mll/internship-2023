@@ -119,7 +119,7 @@ const app = defineClassComponent(
 
     public productsWatcher = this.watch(
       [() => this.productsStore.category, () => this.productsStore.products],
-      ([category, products]) => {
+      ([category]) => {
         const productsCategory = this.productsStore.getProductsByCategory(category.name);
         this.products.value = productsCategory;
         this.pageNumber.value = 1;

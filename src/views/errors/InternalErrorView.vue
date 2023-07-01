@@ -1,6 +1,6 @@
 <template>
   <BaseLayout>
-    <div class="not-found-content">
+    <div class="internal-error-content">
       <div class="wrapper">
         <div class="top-content">
           <h1 class="title">500</h1>
@@ -28,35 +28,33 @@ const app = defineClassComponent(
 </script>
 
 <style scoped lang="scss">
-.not-found-content {
+.internal-error-content {
   background-color: #f7f7f7;
   margin: 0;
   padding: 64px 75px;
 
   & .wrapper {
-    background-color: #fff;
-    text-align: center;
-    margin: 0;
-    padding: 85px 106px;
-
     & .top-content {
-      margin-bottom: 24px;
+      background-color: #eee;
+      margin: 0;
+      padding: 80px 106px 55px 106px;
 
       & .title {
         color: #6a5950;
-        font-size: 136px;
-        font-weight: 600;
         line-height: 1;
+        font-size: 45px;
+        font-weight: 600;
+        margin-bottom: 4px;
       }
     }
 
     & .bottom-content {
+      background-color: #fff;
+      margin: 0;
+      padding: 85px 106px;
+
       & .desc {
-        color: #312e39;
-        font-size: 24px;
-        font-weight: 700;
-        line-height: 1;
-        margin-bottom: 32px;
+        margin-bottom: 16px;
       }
     }
   }

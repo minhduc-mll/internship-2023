@@ -1,12 +1,12 @@
 import type { RouteRecordRaw } from "vue-router";
 import HomeViewVue from "@/views/home/HomeView.vue";
 import ShopViewVue from "@/views/Shop/ShopView.vue";
+import ProductViewVue from "@/views/Product/ProductView.vue";
 import NewArrivalsViewVue from "@/views/NewArrivals/NewArrivalsView.vue";
 import CollectionsViewVue from "@/views/Collections/CollectionsView.vue";
 import SearchResultsViewVue from "@/views/SearchResults/SearchResultsView.vue";
-import ProductViewVue from "@/views/Product/ProductView.vue";
-import TestViewVue from "@/components/ShoppingCart/ShoppingCart.vue";
-import { SearchParams } from "@/plugins/params.plugin";
+import ShoppingCartViewVue from "@/components/ShoppingCart/ShoppingCart.vue";
+import ComingSoonViewVue from "@/views/ComingSoon/ComingSoonView.vue";
 
 export class PathConst {
   public static home: Route = {
@@ -23,7 +23,7 @@ export class PathConst {
     name: "Shop",
     component: ShopViewVue,
     meta: {
-      title: "Shop",
+      title: "title.shop",
     },
   };
 
@@ -32,7 +32,7 @@ export class PathConst {
     name: "Category",
     component: ShopViewVue,
     meta: {
-      title: "Category",
+      title: "title.category",
     },
   };
 
@@ -41,7 +41,7 @@ export class PathConst {
     name: "Product",
     component: ProductViewVue,
     meta: {
-      title: "Product",
+      title: "title.product",
     },
   };
 
@@ -50,7 +50,7 @@ export class PathConst {
     name: "New Arrivals",
     component: NewArrivalsViewVue,
     meta: {
-      title: "New Arrivals",
+      title: "title.newArrivals",
     },
   };
 
@@ -59,7 +59,7 @@ export class PathConst {
     name: "Collections",
     component: CollectionsViewVue,
     meta: {
-      title: "Collections",
+      title: "title.collections",
     },
   };
 
@@ -68,16 +68,46 @@ export class PathConst {
     name: "Search",
     component: SearchResultsViewVue,
     meta: {
-      title: `You Search For ${new SearchParams().get("s")}`,
+      title: "title.search",
     },
   };
 
-  public static test: Route = {
-    path: "/test",
-    name: "test",
-    component: TestViewVue,
+  public static cart: Route = {
+    path: "/cart",
+    name: "Cart",
+    component: ShoppingCartViewVue,
     meta: {
-      title: "Test",
+      title: "title.cart",
+    },
+  };
+
+  public static about: Route = {
+    path: "/about",
+    name: "About",
+    component: ComingSoonViewVue,
+    props: { title: "about", message: "About Page" },
+    meta: {
+      title: "title.about",
+    },
+  };
+
+  public static contact: Route = {
+    path: "/contact",
+    name: "Contact",
+    component: ComingSoonViewVue,
+    props: { title: "contact", message: "Contact Page" },
+    meta: {
+      title: "title.contact",
+    },
+  };
+
+  public static comingSoon: Route = {
+    path: "/coming-soon",
+    name: "Coming Soon",
+    component: ComingSoonViewVue,
+    props: { title: "comingSoon", message: "Coming Soon Page" },
+    meta: {
+      title: "title.comingSoon",
     },
   };
 }

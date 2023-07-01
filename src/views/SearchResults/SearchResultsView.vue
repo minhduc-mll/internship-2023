@@ -2,15 +2,15 @@
   <BaseLayout>
     <div class="search-results-content">
       <div class="top-content">
-        <h1 class="title">Search Results for: {{ app.searchInput }}</h1>
+        <h1 class="title">Search Results for: {{ app.search.value }}</h1>
       </div>
       <div class="bottom-content">
         <div class="desc">
           Sorry, but nothing matched your search terms. Please try again with some different keywords.
         </div>
         <form action="" class="search-form">
-          <input type="text" class="search-input" placeholder="Search ..." />
-          <button class="g-btn search-btn">Search</button>
+          <input type="text" class="search-input" placeholder="Search ..." v-model="app.searchInput.value" />
+          <button class="g-btn search-btn" @click.prevent="app.handleSearch">Search</button>
         </form>
       </div>
     </div>
@@ -20,16 +20,34 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import BaseLayout from "@/layouts/BaseLayout.vue";
+import type { Ref } from "vue";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public searchInput: string = "";
+    public searchInput: Ref<string> = this.ref("");
+    public search: Ref<string> = this.ref(this.searchParams.get("s") || "");
 
     public constructor() {
       super();
 
-      this.searchInput = this.searchParams.get("s") || "";
+      this.searchParams.onStateChange((value) => {
+        this.search.value = value.s;
+      });
+
+      document.title = this.t("title.search", { search: this.search.value });
     }
+
+    public searchWatcher = this.watch(
+      () => this.search.value,
+      (value) => {
+        document.title = this.t("title.search", { search: value });
+      },
+    );
+
+    public handleSearch = () => {
+      this.searchParams.changeParams({ s: this.searchInput.value });
+      this.searchInput.value = "";
+    };
   },
 );
 </script>
