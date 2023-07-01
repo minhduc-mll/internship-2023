@@ -32,8 +32,9 @@ const app = defineClassComponent(
       this.onBeforeMount(async () => {
         try {
           await this.productsStore.fetchAllProducts();
-          if (this.route.params) {
-            this.productsStore.setCategoryByName(this.productsStore.categories, this.route.params.category.toString());
+          if ("category" in this.route.params) {
+            const categoryName = this.route.params.category.toString();
+            this.productsStore.setCategoryByName(categoryName);
           }
         } catch (error) {
           console.log(error);

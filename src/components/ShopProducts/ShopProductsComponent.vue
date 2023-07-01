@@ -3,10 +3,10 @@
     <div class="products-nav">
       <router-link to="/" class="link">Home</router-link>
       <span> / </span>
-      <router-link to="/shop" class="link" @click="app.productsStore.setCategoryByName([], '')">Shop</router-link>
+      <router-link to="/shop" class="link" @click="app.setCategory('')">Shop</router-link>
       <template v-if="app.category.value.id">
         <span> / </span>
-        <router-link to="" class="link">{{ app.category.value.name }}</router-link>
+        <router-link to="" class="link" @click="app.setCategory()">{{ app.category.value.name }}</router-link>
       </template>
     </div>
     <div class="products-header">
@@ -19,7 +19,7 @@
           <option
             :value="option.value"
             :selected="app.sortedBy.value === option.value"
-            @click="app.sortedBy.value = option.value"
+            @click="app.handleSortClick(option.value)"
           >
             {{ option.title }}
           </option>
@@ -34,7 +34,7 @@
     <div class="products-pagination">
       <ul class="page-numbers">
         <li v-if="app.pageNumber.value > 1">
-          <button class="previous page-numbers" @click="app.pageNumber.value--">
+          <button class="previous page-numbers" @click="app.handlePageChange(app.pageNumber.value - 1)">
             <i class="bi bi-arrow-left"></i>
           </button>
         </li>
@@ -42,13 +42,13 @@
           <button
             class="page-numbers"
             :class="{ active: app.pageNumber.value === page }"
-            @click="app.pageNumber.value = page"
+            @click="app.handlePageChange(page)"
           >
             {{ page }}
           </button>
         </li>
         <li v-if="app.pageNumber.value < app.totalPage.value">
-          <button class="next page-numbers" @click="app.pageNumber.value++">
+          <button class="next page-numbers" @click="app.handlePageChange(app.pageNumber.value + 1)">
             <i class="bi bi-arrow-right"></i>
           </button>
         </li>
@@ -120,8 +120,10 @@ const app = defineClassComponent(
     public productsWatcher = this.watch(
       [() => this.productsStore.category, () => this.productsStore.products],
       ([category, products]) => {
-        const productsCategory = this.productsStore.getProductsByCategory(products, category.name);
+        const productsCategory = this.productsStore.getProductsByCategory(category.name);
         this.products.value = productsCategory;
+        this.pageNumber.value = 1;
+        this.sortedBy.value = this.sortedOptions[0].value;
       },
     );
 
@@ -138,6 +140,24 @@ const app = defineClassComponent(
       const end = this.getEndProduct();
       const total = this.totalProducts.value;
       return `${start}-${total > end ? end : total}`;
+    };
+
+    public setCategory = (categoryName?: string) => {
+      if (categoryName != null && categoryName != undefined) {
+        this.productsStore.setCategoryByName(categoryName);
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    public handleSortClick = (sort: string) => {
+      this.sortedBy.value = sort;
+      this.pageNumber.value = 1;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    public handlePageChange = (page: number) => {
+      this.pageNumber.value = page;
+      window.scrollTo({ top: 0, behavior: "smooth" });
     };
   },
 );

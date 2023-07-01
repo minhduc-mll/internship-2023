@@ -31,13 +31,10 @@ import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin"
 import ShoppingCartProductComponent from "@/components/ShoppingCartProduct/ShoppingCartProductComponent.vue";
 import type { Ref } from "vue";
 import type { CartProduct } from "@/models/base.model";
-import { ApiConst } from "@/const/api.const";
-
-const products = ApiConst.cartProducts;
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public products: Ref<Array<CartProduct>> = this.ref(products);
+    public products: Ref<Array<CartProduct>> = this.ref([]);
     public isActive: Ref<boolean> = this.ref(false);
 
     public constructor() {
@@ -46,7 +43,7 @@ const app = defineClassComponent(
 
     public getTotalCartAmount = () => {
       let total = 0;
-      products.map((product) => {
+      this.products.value.map((product) => {
         total += product.quantity * product.price;
       });
       return total;

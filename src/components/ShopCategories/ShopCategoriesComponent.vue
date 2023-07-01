@@ -27,7 +27,7 @@ const app = defineClassComponent(
     public categories = this.computed(() => this.productsStore.categories);
 
     public setCategory = (categoryName: string) => {
-      app.productsStore.setCategoryByName(app.productsStore.categories, categoryName);
+      this.productsStore.setCategoryByName(categoryName);
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
   },

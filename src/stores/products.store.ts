@@ -29,14 +29,14 @@ export const useProductsStore = defineClassStore(
               ...data,
               price: parseFloat(data.price),
               image: data.image.replace("/640/480", "/300/400"),
-              star: 5,
+              star: PrimitiveHelper.getRandomInRange(1, 5.49, 0),
               url: url,
             };
             return new ProductModel(product);
           });
           this.products.value = products;
-          this.getCategories(products);
-          this.getDealsProducts(products);
+          this.getCategories();
+          this.getDealsProducts();
           return products;
         }
         return [];
@@ -45,11 +45,11 @@ export const useProductsStore = defineClassStore(
       }
     };
 
-    public getCategories = async (products: Array<any>) => {
-      const productsCategories = products || [];
+    public getCategories = () => {
+      const products = this.products.value;
       const categories: Array<CategoryModel> = [];
       let id = 1;
-      productsCategories.forEach((product) => {
+      products.forEach((product) => {
         const existing = categories.filter((value) => {
           return value.name == product.category;
         });
@@ -95,71 +95,65 @@ export const useProductsStore = defineClassStore(
       }
     };
 
-    public getProductByTitle = (products: Array<ProductModel>, title: string) => {
-      if (products.length) {
-        const productWithTitle = products.filter((value) => {
-          return value.title === title;
-        });
-        if (productWithTitle.length) {
-          return productWithTitle[0];
-        }
+    public getProductByTitle = (title: string) => {
+      const products = this.products.value;
+      const productWithTitle = products.filter((value) => {
+        return value.title === title;
+      });
+      if (productWithTitle.length) {
+        return productWithTitle[0];
       }
       return new ProductModel({});
     };
 
-    public setProductByTitle = (products: Array<ProductModel>, title: string) => {
+    public setProductByTitle = (title: string) => {
+      const products = this.products.value;
       let product = new ProductModel({});
-      if (products.length) {
-        const productWithTitle = products.filter((value) => {
-          return value.title === title;
-        });
-        if (productWithTitle.length) {
-          product = productWithTitle[0];
-        }
+      const productWithTitle = products.filter((value) => {
+        return value.title === title;
+      });
+      if (productWithTitle.length) {
+        product = productWithTitle[0];
       }
       this.product.value = product;
     };
 
-    public getCategoryByName = (categories: Array<CategoryModel>, name: string) => {
-      if (categories.length) {
-        const categoryWithName = categories.filter((value) => {
-          return value.name.toLowerCase() === name.toLowerCase();
-        });
-        if (categoryWithName.length) {
-          return categoryWithName[0];
-        }
+    public getCategoryByName = (name: string) => {
+      const categories = this.categories.value;
+      const categoryWithName = categories.filter((value) => {
+        return value.name.toLowerCase() === name.toLowerCase();
+      });
+      if (categoryWithName.length) {
+        return categoryWithName[0];
       }
       return new CategoryModel({});
     };
 
-    public setCategoryByName = (categories: Array<CategoryModel>, name: string) => {
+    public setCategoryByName = (name: string) => {
+      const categories = this.categories.value;
       let category = new CategoryModel({});
-      if (categories.length) {
-        const categoryWithName = categories.filter((value) => {
-          return value.name.toLowerCase() === name.toLowerCase();
-        });
-        if (categoryWithName.length) {
-          category = categoryWithName[0];
-        }
+      const categoryWithName = categories.filter((value) => {
+        return value.name.toLowerCase() === name.toLowerCase();
+      });
+      if (categoryWithName.length) {
+        category = categoryWithName[0];
       }
       this.category.value = category;
     };
 
-    public getProductsByCategory = (products: Array<ProductModel>, category: string = "") => {
-      if (products.length) {
-        if (category !== "" && category.toLowerCase() !== "shop") {
-          return products.filter((value) => {
-            return value.category.toLowerCase() === category.toLowerCase();
-          });
-        }
-        return products;
+    public getProductsByCategory = (category: string = "") => {
+      const products = this.products.value;
+      if (category !== "" && category.toLowerCase() !== "shop") {
+        return products.filter((value) => {
+          return value.category.toLowerCase() === category.toLowerCase();
+        });
       }
-      return [];
+      return products;
     };
 
-    public getDealsProducts = async (products: Array<any>, start: number = 0, limit: number = 5) => {
-      const productsDeals = products || [];
-      const filterProducts = productsDeals
+    public getDealsProducts = (start: number = 0, limit: number = 5) => {
+      const products = this.products.value;
+      const filterProducts = products
         .filter((value) => {
           return value.deals;
         })
@@ -175,32 +169,25 @@ export const useProductsStore = defineClassStore(
       limit: number = 18,
       exceptProduct?: ProductModel,
     ) => {
-      if (products.length) {
-        if (exceptProduct) {
-          return products.filter((value, index) => {
-            return index >= start && index < start + limit && value !== exceptProduct;
-          });
-        }
-        return products.filter((_, index) => {
-          return index >= start && index < start + limit;
+      if (exceptProduct) {
+        return products.filter((value, index) => {
+          return index >= start && index < start + limit && value !== exceptProduct;
         });
       }
-      return [];
+      return products.filter((_, index) => {
+        return index >= start && index < start + limit;
+      });
     };
 
     public getSortedProducts = (products: Array<any>, key = "id" as keyof ProductModel, sortDir: string = "asc") => {
-      if (products.length) {
-        if (sortDir.toLowerCase() === "desc") {
-          return products.sort((a, b) => {
-            return b[key] - a[key];
-          });
-        } else {
-          return products.sort((a, b) => {
-            return a[key] - b[key];
-          });
-        }
+      if (sortDir.toLowerCase() === "desc") {
+        return products.sort((a, b) => {
+          return b[key] - a[key];
+        });
       }
-      return [];
+      return products.sort((a, b) => {
+        return a[key] - b[key];
+      });
     };
   },
 );

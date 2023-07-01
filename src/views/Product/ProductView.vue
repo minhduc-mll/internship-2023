@@ -15,7 +15,7 @@
           <div class="products-nav">
             <router-link to="/" class="link">Home</router-link>
             <span> / </span>
-            <router-link to="/shop" class="link" @click="app.productsStore.setCategoryByName([], '')">Shop</router-link>
+            <router-link to="/shop" class="link" @click="app.productsStore.setCategoryByName('')">Shop</router-link>
             <template v-if="app.productsStore.category.id">
               <span> / </span>
               <router-link :to="app.productsStore.category.url" class="link">
@@ -117,10 +117,13 @@ const app = defineClassComponent(
       this.onBeforeMount(async () => {
         try {
           await this.productsStore.fetchAllProducts();
-          if (this.route.params) {
+          if ("category" in this.route.params) {
+            this.productsStore.setCategoryByName(this.route.params.category.toString());
+          }
+          if ("product" in this.route.params) {
             const productTitle = PrimitiveHelper.convertKebabToName(this.route.params.product.toString());
-            this.productsStore.setProductByTitle(this.productsStore.products, productTitle);
-            this.productsStore.setCategoryByName(this.productsStore.categories, this.productsStore.product.category);
+            this.productsStore.setProductByTitle(productTitle);
+            this.productsStore.setCategoryByName(this.productsStore.product.category);
           }
         } catch (error) {
           console.log(error);
@@ -138,7 +141,7 @@ const app = defineClassComponent(
     public relatedProductsWatch = this.watch(
       [() => this.productsStore.category, () => this.productsStore.products],
       ([category, products]) => {
-        const productSCategory = this.productsStore.getProductsByCategory(products, category.name);
+        const productSCategory = this.productsStore.getProductsByCategory(category.name);
         const filterProducts = this.productsStore.getFilterProducts(productSCategory, 0, 8, this.product.value);
         this.products.value = filterProducts;
       },

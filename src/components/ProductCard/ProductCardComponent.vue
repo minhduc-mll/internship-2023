@@ -10,7 +10,7 @@
         <div class="product-title">{{ app.product.title }}</div>
       </router-link>
       <div class="product-star">
-        <span v-for="index in 5" :key="index">
+        <span v-for="index in app.product.star" :key="index">
           <i class="bi bi-star"></i>
         </span>
       </div>
@@ -62,7 +62,7 @@ const app = defineClassComponent(
 
     public setProduct = (product: ProductModel) => {
       this.productsStore.product = product;
-      this.productsStore.setCategoryByName(this.productsStore.categories, product.category);
+      this.productsStore.setCategoryByName(product.category);
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
   },
