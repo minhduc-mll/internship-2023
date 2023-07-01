@@ -5,6 +5,7 @@ import { ApiConst } from "@/const/api.const";
 import { ProductModel } from "@/models/product.model";
 import { CategoryModel } from "@/models/category.model";
 import { PrimitiveHelper } from "@/helpers/primitive.helper";
+import { indexOf } from "lodash";
 
 export const api = new Api();
 
@@ -12,11 +13,14 @@ export const useProductsStore = defineClassStore(
   class Store extends BaseStore {
     public name: string = "products";
 
+    public shoppingCartKey = "productsCart";
+
     public product: Ref<ProductModel> = this.ref(new ProductModel({}));
     public products: Ref<Array<ProductModel>> = this.ref([]);
     public category: Ref<CategoryModel> = this.ref(new CategoryModel({}));
     public categories: Ref<Array<CategoryModel>> = this.ref([]);
     public dealsProducts: Ref<Array<ProductModel>> = this.ref([]);
+    public productsCart: Ref<Array<any>> = this.ref([]);
 
     public fetchAllProducts = async () => {
       try {
@@ -188,6 +192,49 @@ export const useProductsStore = defineClassStore(
       return products.sort((a, b) => {
         return a[key] - b[key];
       });
+    };
+
+    public getShoppingCart = () => {
+      const productsJson = localStorage.getItem(this.shoppingCartKey);
+      if (productsJson) {
+        const productsCart = JSON.parse(productsJson);
+        this.productsCart.value = productsCart;
+      }
+    };
+
+    public addShoppingCart = (product: ProductModel) => {
+      this.getShoppingCart();
+      const products = this.productsCart.value;
+      const existing = products.filter((value) => {
+        return value.id === product.id;
+      });
+      if (existing.length) {
+        const existingIndex = products.indexOf(existing[0]);
+        products[existingIndex].quantity++;
+      } else {
+        products.push({
+          ...product,
+          quantity: 1,
+        });
+      }
+      this.saveLocalStorage();
+    };
+
+    public editShoppingCart = () => {
+      this.getShoppingCart();
+      this.saveLocalStorage();
+    };
+
+    public removeShoppingCart = (product: ProductModel) => {
+      this.getShoppingCart();
+      this.productsCart.value = this.productsCart.value.filter((value) => {
+        return value.id !== product.id;
+      });
+      this.saveLocalStorage();
+    };
+
+    public saveLocalStorage = () => {
+      localStorage.setItem(this.shoppingCartKey, JSON.stringify(this.productsCart.value));
     };
   },
 );

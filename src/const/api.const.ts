@@ -1,6 +1,3 @@
-import type { Product } from "@/models/base.model";
-import type { CartProduct } from "@/models/base.model";
-
 export class ApiConst {
   public static endpoints = {
     getAllProducts: "/products",

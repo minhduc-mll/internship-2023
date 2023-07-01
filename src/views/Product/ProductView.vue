@@ -99,6 +99,9 @@ import type { Ref } from "vue";
 import { ProductModel } from "@/models/product.model";
 import { useProductsStore } from "@/stores/products.store";
 import { PrimitiveHelper } from "@/helpers/primitive.helper";
+import type { ProductProps } from "./ProductView";
+
+const productProps = defineProps<ProductProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
@@ -117,11 +120,12 @@ const app = defineClassComponent(
       this.onBeforeMount(async () => {
         try {
           await this.productsStore.fetchAllProducts();
-          if ("category" in this.route.params) {
-            this.productsStore.setCategoryByName(this.route.params.category.toString());
+          if (productProps.categoryName) {
+            this.productsStore.setCategoryByName(productProps.categoryName);
           }
-          if ("product" in this.route.params) {
-            this.productsStore.setProductByTitle(this.productTitle.value);
+          if (productProps.productTitle) {
+            const productTitle = PrimitiveHelper.convertKebabToName(productProps.productTitle);
+            this.productsStore.setProductByTitle(productTitle);
             this.productsStore.setCategoryByName(this.productsStore.product.category);
           }
         } catch (error) {
@@ -132,18 +136,11 @@ const app = defineClassComponent(
       document.title = this.t("title.product", { productTitle: this.product.value.title });
     }
 
-    public productTitle = this.computed(() => {
-      if ("product" in this.route.params) {
-        return PrimitiveHelper.convertKebabToName(this.route.params.product.toString());
-      }
-      return "Product";
-    });
-
     public productWatch = this.watch(
-      [() => this.productsStore.product, () => this.productTitle.value],
+      [() => this.productsStore.product, () => productProps.productTitle],
       ([product, productTitle]) => {
         this.product.value = product;
-        document.title = this.t("title.product", { productTitle: productTitle });
+        document.title = this.t("title.product", { productTitle: PrimitiveHelper.convertKebabToName(productTitle) });
       },
     );
 

@@ -19,7 +19,7 @@
           </span>
         </div>
       </div>
-      <button class="remove_from_cart_button">
+      <button class="remove_from_cart_button" @click="app.handleRemoveFromCart">
         <i class="bi bi-x-circle"></i>
       </button>
     </div>
@@ -29,17 +29,22 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import type { CartProductProps } from "./ShoppingCartProductComponent";
-import type { CartProduct } from "@/models/base.model";
+import { useProductsStore } from "@/stores/products.store";
 
 const props = defineProps<CartProductProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public product: CartProduct = this.reactive(props.cartProduct);
+    public productsStore = useProductsStore();
+    public product: any = this.reactive(props.cartProduct);
 
     public constructor() {
       super();
     }
+
+    public handleRemoveFromCart = () => {
+      this.productsStore.removeShoppingCart(this.product);
+    };
   },
 );
 </script>

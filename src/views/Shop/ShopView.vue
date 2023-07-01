@@ -22,6 +22,9 @@ import ShopDealsComponent from "@/components/ShopDeals/ShopDealsComponent.vue";
 import ShopProductsComponent from "@/components/ShopProducts/ShopProductsComponent.vue";
 import { useProductsStore } from "@/stores/products.store";
 import { PrimitiveHelper } from "@/helpers/primitive.helper";
+import type { ShopProps } from "./ShopView";
+
+const shopProps = defineProps<ShopProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
@@ -45,8 +48,8 @@ const app = defineClassComponent(
     }
 
     public categoryName = this.computed(() => {
-      if ("category" in this.route.params) {
-        return PrimitiveHelper.convertKebabToName(this.route.params.category.toString());
+      if (shopProps.categoryName) {
+        return PrimitiveHelper.convertKebabToName(shopProps.categoryName);
       }
       return "";
     });

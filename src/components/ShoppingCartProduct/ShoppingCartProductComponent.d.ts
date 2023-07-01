@@ -1,1 +1,1 @@
-export type CartProductProps = { cartProduct: CartProduct };
+export type CartProductProps = { cartProduct: any };

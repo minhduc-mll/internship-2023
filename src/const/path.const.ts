@@ -28,18 +28,20 @@ export class PathConst {
   };
 
   public static category: Route = {
-    path: "/shop/:category",
+    path: "/shop/:categoryName",
     name: "Category",
     component: ShopViewVue,
+    props: true,
     meta: {
       title: "title.category",
     },
   };
 
   public static product: Route = {
-    path: "/shop/:category/:product",
+    path: "/shop/:categoryName/:productTitle",
     name: "Product",
     component: ProductViewVue,
+    props: true,
     meta: {
       title: "title.product",
     },
@@ -78,6 +80,16 @@ export class PathConst {
     component: ShoppingCartViewVue,
     meta: {
       title: "title.cart",
+    },
+  };
+
+  public static checkout: Route = {
+    path: "/checkout",
+    name: "Checkout",
+    component: ComingSoonViewVue,
+    props: { title: "checkout", message: "Checkout Page" },
+    meta: {
+      title: "title.checkout",
     },
   };
 

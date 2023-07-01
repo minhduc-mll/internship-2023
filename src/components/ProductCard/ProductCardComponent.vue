@@ -1,12 +1,12 @@
 <template>
   <div class="product">
     <div class="product-thumbnail">
-      <router-link :to="app.product.url" class="product-link" @click="app.setProduct(app.product)">
+      <router-link :to="app.product.url" class="product-link" @click="app.setProduct">
         <img width="300" height="400" :src="app.product.image" />
       </router-link>
     </div>
     <div class="product-detail">
-      <router-link :to="app.product.url" class="product-link" @click="app.setProduct(app.product)">
+      <router-link :to="app.product.url" class="product-link" @click="app.setProduct">
         <div class="product-title">{{ app.product.title }}</div>
       </router-link>
       <div class="product-star">
@@ -36,7 +36,7 @@
     </div>
     <div class="add_to_cart">
       <span class="tooltip"> Add to card </span>
-      <button class="add_to_cart_button">
+      <button class="add_to_cart_button" @click.prevent="app.handleAddToCart">
         <i class="bi bi-handbag-fill"></i>
       </button>
     </div>
@@ -60,10 +60,14 @@ const app = defineClassComponent(
       super();
     }
 
-    public setProduct = (product: ProductModel) => {
-      this.productsStore.product = product;
-      this.productsStore.setCategoryByName(product.category);
+    public setProduct = () => {
+      this.productsStore.product = this.product;
+      this.productsStore.setCategoryByName(this.product.category);
       window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    public handleAddToCart = () => {
+      this.productsStore.addShoppingCart(this.product);
     };
   },
 );
