@@ -1,12 +1,12 @@
 <template>
   <BaseLayout>
-    <div class="home-content">
+    <div class="coming-soon-content">
       <div class="wrapper">
         <div class="top-content">
-          <h1 class="title">{{ app.t(`title.home`) }}</h1>
+          <h1 class="title">{{ app.t(`title.${props.title}`) }}</h1>
         </div>
         <div class="bottom-content">
-          <div class="desc">Home Content</div>
+          <div class="desc">{{ props.message }}</div>
         </div>
       </div>
     </div>
@@ -14,12 +14,14 @@
 </template>
 
 <script setup lang="ts">
-import BaseLayout from "@/layouts/BaseLayout.vue";
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
+import BaseLayout from "@/layouts/BaseLayout.vue";
+import type { Props } from "./ComingSoonView";
+
+const props = defineProps<Props>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public msg = "Home";
     public constructor() {
       super();
     }
@@ -30,35 +32,33 @@ const app = defineClassComponent(
 <style scoped lang="scss">
 @import "@/assets/scss/modules";
 
-.home-content {
+.coming-soon-content {
   background-color: #f7f7f7;
   margin: 0;
   padding: 64px 75px;
 
   & .wrapper {
-    background-color: #fff;
-    text-align: center;
-    margin: 0;
-    padding: 85px 106px;
-
     & .top-content {
-      margin-bottom: 24px;
+      background-color: #eee;
+      margin: 0;
+      padding: 80px 106px 55px 106px;
 
       & .title {
         color: #6a5950;
-        font-size: 136px;
-        font-weight: 600;
         line-height: 1;
+        font-size: 45px;
+        font-weight: 600;
+        margin-bottom: 4px;
       }
     }
 
     & .bottom-content {
+      background-color: #fff;
+      margin: 0;
+      padding: 85px 106px;
+
       & .desc {
-        color: #312e39;
-        font-size: 24px;
-        font-weight: 700;
-        line-height: 1;
-        margin-bottom: 32px;
+        margin-bottom: 16px;
       }
     }
   }
