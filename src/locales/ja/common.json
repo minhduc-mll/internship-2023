@@ -1,8 +1,19 @@
 {
   "hello": "World",
   "title": {
-    "home": "Homepage",
-    "notFound": "Not Found",
+    "home": "Home",
+    "shop": "Shop",
+    "category": "{{categoryName}} Archives",
+    "product": "{{productTitle}}",
+    "newArrivals": "New Arrivals",
+    "collections": "Collections",
+    "search": "You Search For {{search}}",
+    "cart": "Cart",
+    "checkout": "Checkout",
+    "about": "About",
+    "contact": "Contact",
+    "comingSoon": "Coming Soon",
+    "notFound": "Page Not Found",
     "internalError": "Error"
   }
 }
