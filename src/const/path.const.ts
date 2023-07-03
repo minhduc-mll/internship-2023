@@ -1,11 +1,10 @@
 import type { RouteRecordRaw } from "vue-router";
-import HomeViewVue from "@/views/Home/HomeView.vue";
+import HomeViewVue from "@/views/home/HomeView.vue";
 import ShopViewVue from "@/views/Shop/ShopView.vue";
 import ProductViewVue from "@/views/Product/ProductView.vue";
 import NewArrivalsViewVue from "@/views/NewArrivals/NewArrivalsView.vue";
 import CollectionsViewVue from "@/views/Collections/CollectionsView.vue";
 import SearchResultsViewVue from "@/views/SearchResults/SearchResultsView.vue";
-import ShoppingCartViewVue from "@/components/ShoppingCart/ShoppingCart.vue";
 import ComingSoonViewVue from "@/views/ComingSoon/ComingSoonView.vue";
 
 export class PathConst {

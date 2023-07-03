@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 import { translate } from "./i18n.plugin";
 import { PathConst } from "@/const/path.const";
-import NotFoundView from "@/views/Errors/NotFoundView.vue";
+import NotFoundView from "@/views/errors/NotFoundView.vue";
 
 export const routes = Object.values(PathConst);
 

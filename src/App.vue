@@ -4,11 +4,11 @@
 </template>
 
 <script setup lang="ts">
+import InternalErrorView from "@/views/errors/InternalErrorView.vue";
 import { RouterView } from "vue-router";
 import { AppConst } from "./const/app.const";
 import { BaseComponent, defineClassComponent } from "./plugins/component.plugin";
 import { GblobalEvent } from "./plugins/event.plugin";
-import InternalErrorView from "@/views/Errors/InternalErrorView.vue";
 import { useProductsStore } from "./stores/products.store";
 
 const app = defineClassComponent(
