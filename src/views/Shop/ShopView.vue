@@ -42,6 +42,10 @@ const app = defineClassComponent(
       this.onBeforeMount(() => {
         this.setCategory(this.categoryName.value);
       });
+
+      this.onUpdated(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
     }
 
     public categoryNameWatcher = this.watch(

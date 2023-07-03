@@ -132,6 +132,10 @@ const app = defineClassComponent(
       this.onBeforeMount(() => {
         this.setProduct(this.productTitle.value, this.categoryName.value);
       });
+
+      this.onUpdated(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
     }
 
     public productTitleWatch = this.watch(
@@ -336,7 +340,7 @@ const app = defineClassComponent(
       & .product-tabs {
         list-style: none;
         padding: 0;
-        margin-bottom: 16px;
+        margin-bottom: 16px !important;
         overflow: hidden;
         position: relative;
         display: flex;

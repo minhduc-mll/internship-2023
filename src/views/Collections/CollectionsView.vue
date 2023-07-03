@@ -139,10 +139,6 @@ const app = defineClassComponent(
           word-wrap: break-word;
         }
       }
-
-      & button {
-        background-color: transparent;
-      }
     }
   }
 }

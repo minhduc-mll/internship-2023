@@ -1,13 +1,13 @@
 <template>
   <div class="product-cart">
     <div class="product-thumbnail">
-      <router-link :to="app.product.url" class="product-link">
+      <router-link :to="app.product.url" class="product-link" @click="app.closeShoppingCart">
         <img width="300" height="400" :src="app.product.image" />
       </router-link>
     </div>
     <div class="product-detail">
       <div class="left">
-        <router-link :to="app.product.url" class="product-link">
+        <router-link :to="app.product.url" class="product-link" @click="app.closeShoppingCart">
           <div class="product-title">{{ app.product.title }}</div>
         </router-link>
         <div class="product-desc">
@@ -45,6 +45,10 @@ const app = defineClassComponent(
 
     public handleRemoveFromCart = () => {
       this.productsStore.removeShoppingCart(this.product);
+    };
+
+    public closeShoppingCart = () => {
+      this.productsStore.setActiveShoppingCart(false);
     };
   },
 );

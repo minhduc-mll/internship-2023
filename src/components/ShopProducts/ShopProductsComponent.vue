@@ -151,7 +151,6 @@ const app = defineClassComponent(
     public handleSortClick = (sort: string) => {
       this.sortedBy.value = sort;
       this.pageNumber.value = 1;
-      window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     public handlePageChange = (page: number) => {

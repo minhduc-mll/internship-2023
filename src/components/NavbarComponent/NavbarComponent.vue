@@ -40,16 +40,16 @@
       </div>
       <div class="nav-right site-header-section">
         <div class="items-social">
-          <router-link to="" class="link" @click="app.handleScrollToTop">
+          <router-link to="" class="link">
             <i class="bi bi-instagram"></i>
           </router-link>
-          <router-link to="" class="link" @click="app.handleScrollToTop">
+          <router-link to="" class="link">
             <i class="bi bi-facebook"></i>
           </router-link>
-          <router-link to="" class="link" @click="app.handleScrollToTop">
+          <router-link to="" class="link">
             <i class="bi bi-twitter"></i>
           </router-link>
-          <router-link to="" class="link" @click="app.handleScrollToTop">
+          <router-link to="" class="link">
             <i class="bi bi-youtube"></i>
           </router-link>
         </div>
@@ -108,10 +108,6 @@ const app = defineClassComponent(
       }
     };
 
-    public handleScrollToTop = () => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-
     public handleFocusOut = () => {
       this.activeSearch.value = false;
       console.log("Focus Out");
@@ -158,6 +154,7 @@ const app = defineClassComponent(
     }
 
     & .navbar-left {
+      flex: 4;
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -243,12 +240,14 @@ const app = defineClassComponent(
     }
 
     & .nav-mid {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     & .nav-right {
+      flex: 4;
       display: flex;
       align-items: center;
       justify-content: flex-end;
