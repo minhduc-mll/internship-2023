@@ -77,7 +77,8 @@ export class PathConst {
   public static cart: Route = {
     path: "/cart",
     name: "Cart",
-    component: ShoppingCartViewVue,
+    component: ComingSoonViewVue,
+    props: { title: "cart", message: "Cart Page" },
     meta: {
       title: "title.cart",
     },

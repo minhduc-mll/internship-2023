@@ -4,10 +4,23 @@
       <span>Summer Sale. up to 40% off.</span>
     </div>
     <div class="navbar">
-      <div class="navbar-left">
+      <div class="navbar-left site-header-section">
         <div class="searchbar">
-          <form action="" class="search-form" :class="{ active: app.activeSearch.value }">
-            <input type="text" class="search-input" placeholder="Search ..." />
+          <form
+            action=""
+            class="search-form"
+            :class="{ active: app.activeSearch.value }"
+            @submit="app.handleSearchClick"
+          >
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search ..."
+              v-model="app.searchInput.value"
+              @focusout="app.handleFocusOut"
+              tabindex="-1"
+              autofocus
+            />
             <button class="search-submit" hidden>
               <i class="bi bi-search"></i>
             </button>
@@ -22,10 +35,10 @@
           <li><RouterLink to="/collections" class="navbar-menu-items-1">Collections</RouterLink></li>
         </ul>
       </div>
-      <div class="nav-mid">
+      <div class="nav-mid site-header-section">
         <RouterLink to="/"><img src="@/assets/img/site-logo.svg" /></RouterLink>
       </div>
-      <div class="nav-right">
+      <div class="nav-right site-header-section">
         <div class="items-social">
           <router-link to="" class="link" @click="app.handleScrollToTop">
             <i class="bi bi-instagram"></i>
@@ -40,9 +53,15 @@
             <i class="bi bi-youtube"></i>
           </router-link>
         </div>
-        <div class="items-cart">
-          <span>$0.00</span>
-          <i class="bi bi-basket3-fill"></i>
+        <div class="items-cart" @click="app.handleCartClick">
+          <span class="amount">
+            <span class="currency-symbol">$</span>
+            <span>{{ app.totalCartAmount.value.toFixed(2) }}</span>
+          </span>
+          <div class="cart">
+            <i class="bi bi-basket3-fill"></i>
+            <span>{{ app.totalProductsCart.value }}</span>
+          </div>
         </div>
         <div class="items-infor">
           <i class="bi bi-person-fill"></i>
@@ -56,9 +75,11 @@
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import type { Page } from "./NavbarComponent";
 import type { Ref } from "vue";
+import { useProductsStore } from "@/stores/products.store";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
+    public productsStore = useProductsStore();
     public pages: Ref<Array<Page>> = this.ref([
       { id: 1, text: "Home", url: "/" },
       { id: 2, text: "Categories", url: "/categories" },
@@ -66,17 +87,38 @@ const app = defineClassComponent(
       { id: 4, text: "Collections", url: "/collections" },
     ]);
     public activeSearch: Ref<boolean> = this.ref(false);
+    public searchInput: Ref<string> = this.ref("");
+    public totalProductsCart = this.computed(() => this.productsStore.getTotalProductsCart());
+    public totalCartAmount = this.computed(() => this.productsStore.getTotalCartAmount());
 
     public constructor() {
       super();
+
+      this.onBeforeMount(() => {
+        this.productsStore.getShoppingCart();
+      });
     }
 
     public handleSearchClick = () => {
-      this.activeSearch.value = !this.activeSearch.value;
+      if (this.activeSearch.value && this.searchInput.value) {
+        this.router.push({ path: `/search`, name: "Search", query: { s: this.searchInput.value } });
+        this.activeSearch.value = false;
+      } else {
+        this.activeSearch.value = !this.activeSearch.value;
+      }
     };
 
     public handleScrollToTop = () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    public handleFocusOut = () => {
+      this.activeSearch.value = false;
+      console.log("Focus Out");
+    };
+
+    public handleCartClick = () => {
+      this.productsStore.setActiveShoppingCart(true);
     };
   },
 );
@@ -108,9 +150,17 @@ const app = defineClassComponent(
     padding: 0 35px;
     border-bottom: 1px solid #eaeaea;
 
+    & .site-header-section {
+      height: 100%;
+      min-height: 0;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+
     & .navbar-left {
       display: flex;
       align-items: center;
+      justify-content: flex-start;
       gap: 20px;
 
       & .searchbar {
@@ -173,54 +223,106 @@ const app = defineClassComponent(
         display: flex;
         align-items: center;
         list-style: none;
+        height: 100%;
 
-        & .navbar-menu-items-1 {
-          text-decoration: none;
-          color: black;
-          font-family: "Montserrat", sans-serif;
-          font-size: 14px;
-          font-weight: 600;
-          padding: 0 14px;
+        & li {
+          height: 100%;
+
+          & .navbar-menu-items-1 {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            color: #000;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 0 14px;
+          }
         }
       }
+    }
+
+    & .nav-mid {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     & .nav-right {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      gap: 20px;
 
       & .items-social {
         display: flex;
+        align-items: center;
         gap: 20px;
-        padding-left: 130px;
-        padding-right: 25px;
+        padding: 0 20px;
 
-        & i {
-          font-size: 18px;
-          cursor: pointer;
+        & .link {
+          display: flex;
+          align-items: center;
+
+          & i {
+            font-size: 18px;
+            cursor: pointer;
+          }
         }
       }
 
       & .items-cart {
+        height: 100%;
         display: flex;
         align-items: center;
         gap: 15px;
-        padding-left: 25px;
-        padding-right: 30px;
+        padding: 0 20px;
         cursor: pointer;
 
         &:hover {
           color: #6a5950;
+
+          & .cart {
+            & span {
+              background-color: #6a5950;
+            }
+          }
         }
 
-        & span {
-          font-size: 16px;
-          font-weight: 600;
-          line-height: 44px;
+        & .amount {
+          & span {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 44px;
+          }
         }
 
-        & i {
-          font-size: 24px;
+        & .cart {
+          position: relative;
+
+          & i {
+            font-size: 24px;
+          }
+
+          & span {
+            position: absolute;
+            font-family: "Montserrat", sans-serif;
+            font-size: 11px;
+            font-weight: bold;
+            font-style: normal;
+            line-height: 17px;
+            letter-spacing: -0.5px;
+            box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.3);
+            border-radius: 99px;
+            top: -5px;
+            right: -15px;
+            height: 18px;
+            min-width: 18px;
+            text-align: center;
+            z-index: 3;
+            color: #fff;
+            background-color: #312e39;
+          }
         }
       }
 

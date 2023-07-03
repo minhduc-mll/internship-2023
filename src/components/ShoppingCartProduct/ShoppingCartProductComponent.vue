@@ -15,7 +15,8 @@
           <span> x </span>
           <span class="amount">
             <span class="currency-symbol">$</span>
-            <span>{{ app.product.price.toFixed(2) }}</span>
+            <span v-if="app.product.deals">{{ (app.product.price * 0.8).toFixed(2) }}</span>
+            <span v-else>{{ app.product.price.toFixed(2) }}</span>
           </span>
         </div>
       </div>

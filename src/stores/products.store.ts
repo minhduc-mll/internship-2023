@@ -12,7 +12,8 @@ export const useProductsStore = defineClassStore(
   class Store extends BaseStore {
     public name: string = "products";
 
-    public shoppingCartKey = "productsCart";
+    public shoppingCartKey: string = "productsCart";
+    public isActiveShoppingCart: Ref<boolean> = this.ref(false);
 
     public product: Ref<ProductModel> = this.ref(new ProductModel({}));
     public products: Ref<Array<ProductModel>> = this.ref([]);
@@ -202,6 +203,26 @@ export const useProductsStore = defineClassStore(
       }
     };
 
+    public getTotalProductsCart = () => {
+      let total = 0;
+      this.productsCart.value.forEach((value) => {
+        total += value.quantity;
+      });
+      return total;
+    };
+
+    public getTotalCartAmount = () => {
+      let total = 0;
+      this.productsCart.value.map((product) => {
+        if (product.deals) {
+          total += product.quantity * (product.price * 0.8);
+        } else {
+          total += product.quantity * product.price;
+        }
+      });
+      return total;
+    };
+
     public addShoppingCart = (product: ProductModel) => {
       this.getShoppingCart();
       const products = this.productsCart.value;
@@ -235,6 +256,10 @@ export const useProductsStore = defineClassStore(
 
     public saveLocalStorage = () => {
       localStorage.setItem(this.shoppingCartKey, JSON.stringify(this.productsCart.value));
+    };
+
+    public setActiveShoppingCart = (active: boolean) => {
+      this.isActiveShoppingCart.value = active;
     };
   },
 );

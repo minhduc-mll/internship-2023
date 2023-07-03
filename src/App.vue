@@ -22,6 +22,7 @@ const app = defineClassComponent(
       this.onBeforeMount(async () => {
         try {
           await this.productsStore.fetchAllProducts();
+          await this.productsStore.getShoppingCart();
         } catch (error) {
           console.log(error);
         }

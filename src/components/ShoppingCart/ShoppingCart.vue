@@ -1,6 +1,5 @@
 <template>
-  <button class="g-btn" @click="app.handleShoppingCart">Cart</button>
-  <div class="cart-overlay" :class="{ active: app.isActive.value }" @click="app.handleShoppingCart"></div>
+  <div class="cart-overlay" :class="{ active: app.isActive.value }" @click="app.closeShoppingCart"></div>
   <div class="shopping-card" :class="{ active: app.isActive.value }">
     <div class="cart-header">
       <div class="header-title">Shopping Cart</div>
@@ -16,7 +15,7 @@
         <span>Subtotal:</span>
         <span class="amount">
           <span class="currency-symbol">$</span>
-          <span>{{ app.getTotalCartAmount() }}</span>
+          <span>{{ app.totalCartAmount.value.toFixed(2) }}</span>
         </span>
       </div>
       <div class="cart-buttons">
@@ -38,14 +37,14 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import ShoppingCartProductComponent from "@/components/ShoppingCartProduct/ShoppingCartProductComponent.vue";
-import type { Ref } from "vue";
 import { useProductsStore } from "@/stores/products.store";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
-    public products: Ref<Array<any>> = this.ref([]);
-    public isActive: Ref<boolean> = this.ref(false);
+    public products = this.computed(() => this.productsStore.productsCart);
+    public totalCartAmount = this.computed(() => this.productsStore.getTotalCartAmount());
+    public isActive = this.computed(() => this.productsStore.isActiveShoppingCart);
 
     public constructor() {
       super();
@@ -55,39 +54,27 @@ const app = defineClassComponent(
       });
     }
 
-    public productsCartWatcher = this.watch(
-      () => this.productsStore.productsCart,
-      (products) => {
-        this.products.value = products;
-      },
-    );
-
-    public getTotalCartAmount = () => {
-      let total = 0;
-      this.products.value.map((product) => {
-        total += product.quantity * product.price;
-      });
-      return total;
-    };
-
     public closeShoppingCart = () => {
-      this.isActive.value = false;
+      this.productsStore.setActiveShoppingCart(false);
     };
 
     public handleShoppingCart = () => {
-      this.isActive.value = !this.isActive.value;
+      this.productsStore.setActiveShoppingCart(!this.isActive.value);
     };
 
     public handleViewCart = () => {
       this.router.push({ path: "/cart", name: "Cart" });
+      this.closeShoppingCart();
     };
 
     public handleCheckout = () => {
       this.router.push({ path: "/checkout", name: "Checkout" });
+      this.closeShoppingCart();
     };
 
     public handleContinueShopping = () => {
       this.router.push({ path: "/shop", name: "Shop" });
+      this.closeShoppingCart();
     };
   },
 );
@@ -182,7 +169,7 @@ const app = defineClassComponent(
 
     & .cart-list {
       position: relative;
-      padding: 21px;
+      padding: 21px !important;
       flex: 1;
       overflow: auto;
       margin: 0;
