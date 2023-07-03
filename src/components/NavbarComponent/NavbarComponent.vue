@@ -6,14 +6,15 @@
     <div class="navbar">
       <div class="navbar-left">
         <div class="searchbar">
-          <form action="" class="search-form">
-            <label>
-              <button class="search-submit ast-search-submit" @click.prevent="">
-                <span hidden>Search</span>
-                <i class="bi bi-search"></i>
-              </button>
-            </label>
+          <form action="" class="search-form" :class="{ active: app.activeSearch.value }">
+            <input type="text" class="search-input" placeholder="Search ..." />
+            <button class="search-submit" hidden>
+              <i class="bi bi-search"></i>
+            </button>
           </form>
+          <button class="search-btn" @click.prevent="app.handleSearchClick">
+            <i class="bi bi-search"></i>
+          </button>
         </div>
         <ul class="navbar-menu-items">
           <li><RouterLink to="/shop" class="navbar-menu-items-1">Shop By Categories</RouterLink></li>
@@ -26,10 +27,18 @@
       </div>
       <div class="nav-right">
         <div class="items-social">
-          <i class="bi bi-instagram"></i>
-          <i class="bi bi-facebook"></i>
-          <i class="bi bi-twitter"></i>
-          <i class="bi bi-youtube"></i>
+          <router-link to="" class="link" @click="app.handleScrollToTop">
+            <i class="bi bi-instagram"></i>
+          </router-link>
+          <router-link to="" class="link" @click="app.handleScrollToTop">
+            <i class="bi bi-facebook"></i>
+          </router-link>
+          <router-link to="" class="link" @click="app.handleScrollToTop">
+            <i class="bi bi-twitter"></i>
+          </router-link>
+          <router-link to="" class="link" @click="app.handleScrollToTop">
+            <i class="bi bi-youtube"></i>
+          </router-link>
         </div>
         <div class="items-cart">
           <span>$0.00</span>
@@ -56,9 +65,19 @@ const app = defineClassComponent(
       { id: 3, text: "NewArrivals", url: "/newarrivals" },
       { id: 4, text: "Collections", url: "/collections" },
     ]);
+    public activeSearch: Ref<boolean> = this.ref(false);
+
     public constructor() {
       super();
     }
+
+    public handleSearchClick = () => {
+      this.activeSearch.value = !this.activeSearch.value;
+    };
+
+    public handleScrollToTop = () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
   },
 );
 </script>
@@ -95,9 +114,58 @@ const app = defineClassComponent(
       gap: 20px;
 
       & .searchbar {
-        & .search-submit {
+        position: relative;
+
+        & .search-form {
+          display: none;
+          position: absolute;
+          background-color: #fff;
+          border: 1px solid #ddd;
+          padding-left: 48px;
+          z-index: 3;
+
+          top: 50%;
+          left: -10px;
+          transform: translate(0, -50%);
+          transition: all 0.2s;
+
+          &.active {
+            display: flex;
+            align-items: center;
+          }
+
+          & .search-input {
+            width: 235px;
+            color: #757575;
+            margin-left: 10px;
+            padding: 12px;
+            height: auto;
+            background-color: inherit;
+            box-shadow: none;
+            outline: none;
+            border: none;
+            transition: all 0.2s linear;
+
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 26px;
+          }
+
+          & .search-submit {
+            position: absolute;
+            left: 10px;
+            outline: none;
+            border: none;
+            background-color: inherit;
+          }
+        }
+
+        & .search-btn {
+          position: relative;
+          outline: none;
           border: none;
-          background-color: white;
+          background-color: inherit;
+          z-index: 4;
         }
       }
 

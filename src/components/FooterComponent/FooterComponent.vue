@@ -6,18 +6,35 @@
           <img src="@/assets/img/site-logo-white.svg" />
           <span>Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.</span>
           <div class="contact">
-            <router-link to="/#" class="link"><i class="bi bi-instagram"></i></router-link>
-            <router-link to="/#" class="link"><i class="bi bi-facebook"></i></router-link>
-            <router-link to="/#" class="link"><i class="bi bi-twitter"></i></router-link>
+            <router-link to="" class="link" @click="app.handleScrollToTop">
+              <i class="bi bi-instagram"></i>
+            </router-link>
+            <router-link to="" class="link" @click="app.handleScrollToTop">
+              <i class="bi bi-facebook"></i>
+            </router-link>
+            <router-link to="" class="link" @click="app.handleScrollToTop">
+              <i class="bi bi-twitter"></i>
+            </router-link>
+            <router-link to="" class="link" @click="app.handleScrollToTop">
+              <i class="bi bi-youtube"></i>
+            </router-link>
           </div>
         </div>
         <div class="infor">
           <span class="title">Information</span>
           <div class="title-items">
-            <router-link to="/about" class="link"><span>About me</span></router-link>
-            <router-link to="/#" class="link"><span>My story</span></router-link>
-            <router-link to="/#" class="link"><span>Awards & achievement</span></router-link>
-            <router-link to="/contact" class="link"><span>Contact</span></router-link>
+            <router-link to="/about" class="link" @click="app.handleScrollToTop">
+              <span>About me</span>
+            </router-link>
+            <router-link to="/#" class="link" @click="app.handleScrollToTop">
+              <span>My story</span>
+            </router-link>
+            <router-link to="/#" class="link" @click="app.handleScrollToTop">
+              <span>Awards & achievement</span>
+            </router-link>
+            <router-link to="/contact" class="link" @click="app.handleScrollToTop">
+              <span>Contact</span>
+            </router-link>
           </div>
         </div>
         <div class="discover">
@@ -28,7 +45,7 @@
               class="link"
               v-for="category of app.categoriesDiscover.value"
               :key="category.id"
-              @click="app.handleDiscoverClick"
+              @click="app.handleScrollToTop"
             >
               <span>{{ category.name }}</span>
             </router-link>
@@ -66,36 +83,27 @@ import { PrimitiveHelper } from "@/helpers/primitive.helper";
 import type { CategoryModel } from "@/models/category.model";
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import { useProductsStore } from "@/stores/products.store";
-import type { Ref } from "vue";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
-    public categoriesDiscover: Ref<Array<CategoryModel>> = this.ref([]);
+    public categoriesDiscover = this.computed(() => this.getRandomCategories(this.productsStore.categories));
 
     public constructor() {
       super();
-
-      this.onBeforeMount(() => {
-        this.categoriesDiscover.value = this.getRandomCategories(this.productsStore.categories);
-      });
     }
-
-    public watcher = this.watch(
-      () => this.productsStore.categories,
-      (categories) => {
-        this.categoriesDiscover.value = this.getRandomCategories(categories);
-      },
-    );
 
     public getRandomCategories = (categories: Array<CategoryModel>) => {
       if (categories.length) {
         const discover: Array<CategoryModel> = [];
         const randomSet: Set<number> = new Set();
         for (let index = 0; index < 4; index++) {
-          let categoriesIndex = PrimitiveHelper.getRandomInRange(0, categories.length, 0);
+          let categoriesIndex = PrimitiveHelper.getRandomInRange(0, categories.length - 1, 0);
           while (randomSet.has(categoriesIndex)) {
             categoriesIndex++;
+            if (categoriesIndex >= categories.length) {
+              categoriesIndex = 0;
+            }
           }
           randomSet.add(categoriesIndex);
         }
@@ -107,7 +115,7 @@ const app = defineClassComponent(
       return [];
     };
 
-    public handleDiscoverClick = () => {
+    public handleScrollToTop = () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
   },

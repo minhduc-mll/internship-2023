@@ -5,7 +5,6 @@ import { ApiConst } from "@/const/api.const";
 import { ProductModel } from "@/models/product.model";
 import { CategoryModel } from "@/models/category.model";
 import { PrimitiveHelper } from "@/helpers/primitive.helper";
-import { indexOf } from "lodash";
 
 export const api = new Api();
 
@@ -114,7 +113,7 @@ export const useProductsStore = defineClassStore(
       const products = this.products.value;
       let product = new ProductModel({});
       const productWithTitle = products.filter((value) => {
-        return value.title === title;
+        return value.title.toLowerCase() === title.toLowerCase();
       });
       if (productWithTitle.length) {
         product = productWithTitle[0];

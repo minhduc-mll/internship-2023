@@ -1,5 +1,5 @@
 import type { RouteRecordRaw } from "vue-router";
-import HomeViewVue from "@/views/home/HomeView.vue";
+import HomeViewVue from "@/views/Home/HomeView.vue";
 import ShopViewVue from "@/views/Shop/ShopView.vue";
 import ProductViewVue from "@/views/Product/ProductView.vue";
 import NewArrivalsViewVue from "@/views/NewArrivals/NewArrivalsView.vue";

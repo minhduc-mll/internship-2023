@@ -15,7 +15,7 @@
           <div class="products-nav">
             <router-link to="/" class="link">Home</router-link>
             <span> / </span>
-            <router-link to="/shop" class="link" @click="app.productsStore.setCategoryByName('')">Shop</router-link>
+            <router-link to="/shop" class="link">Shop</router-link>
             <template v-if="app.productsStore.category.id">
               <span> / </span>
               <router-link :to="app.productsStore.category.url" class="link">
@@ -112,32 +112,46 @@ const app = defineClassComponent(
     ];
     public products: Ref<Array<ProductModel>> = this.ref([]);
     public activeTab: Ref<string> = this.ref("description");
+    public product = this.computed(() => this.productsStore.product);
+    public categoryName = this.computed(() => {
+      if (productProps.categoryName) {
+        return PrimitiveHelper.convertKebabToName(productProps.categoryName);
+      }
+      return "";
+    });
+    public productTitle = this.computed(() => {
+      if (productProps.productTitle) {
+        return PrimitiveHelper.convertKebabToName(productProps.productTitle);
+      }
+      return "";
+    });
 
     public constructor() {
       super();
 
-      document.title = this.t("title.product", { productTitle: this.product.value.title });
+      this.onBeforeMount(() => {
+        this.setProduct(this.productTitle.value, this.categoryName.value);
+      });
     }
 
-    public product = this.computed(() => this.productsStore.product);
-
     public productTitleWatch = this.watch(
-      [() => productProps.productTitle, () => this.productsStore.products],
-      ([productTitle]) => {
-        console.log(productTitle);
-        this.productsStore.setProductByTitle(productTitle);
-        document.title = this.t("title.product", { productTitle: PrimitiveHelper.convertKebabToName(productTitle) });
+      [() => this.productTitle.value, () => this.categoryName.value, () => this.productsStore.products],
+      ([productTitle, categoryName]) => {
+        this.setProduct(productTitle, categoryName);
       },
     );
 
-    public relatedProductsWatch = this.watch(
-      [() => this.productsStore.product, () => this.productsStore.category, () => this.productsStore.products],
-      ([product, category]) => {
-        const productSCategory = this.productsStore.getProductsByCategory(category.name);
-        const filterProducts = this.productsStore.getFilterProducts(productSCategory, 0, 8, product);
+    public setProduct = (productTitle: string, categoryName: string) => {
+      if (productTitle && categoryName) {
+        this.productsStore.setProductByTitle(productTitle);
+        this.productsStore.setCategoryByName(categoryName);
+        const productsCategory = this.productsStore.getProductsByCategory(categoryName);
+        const product = this.productsStore.getProductByTitle(productTitle);
+        const filterProducts = this.productsStore.getFilterProducts(productsCategory, 0, 8, product);
         this.products.value = filterProducts;
-      },
-    );
+        document.title = this.t("title.product", { productTitle: productTitle });
+      }
+    };
   },
 );
 </script>

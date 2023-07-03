@@ -50,10 +50,6 @@ const app = defineClassComponent(
 
     public constructor() {
       super();
-
-      this.onBeforeMount(() => {
-        this.productsStore.fetchAllProducts();
-      });
     }
   },
 );

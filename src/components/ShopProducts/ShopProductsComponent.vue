@@ -85,6 +85,13 @@ const app = defineClassComponent(
 
     public constructor() {
       super();
+
+      this.onBeforeMount(() => {
+        const productsCategory = this.productsStore.getProductsByCategory(this.category.value.name);
+        this.products.value = productsCategory;
+        this.pageNumber.value = 1;
+        this.sortedBy.value = this.sortedOptions[0].value;
+      });
     }
 
     public filterProducts = this.computed(() => {
@@ -117,12 +124,7 @@ const app = defineClassComponent(
     });
 
     public productsWatcher = this.watch(
-      [
-        () => this.productsStore.category,
-        () => this.productsStore.product,
-        () => this.productsStore.products,
-        () => this.route.fullPath,
-      ],
+      [() => this.category.value, () => this.productsStore.products],
       ([category]) => {
         const productsCategory = this.productsStore.getProductsByCategory(category.name);
         this.products.value = productsCategory;
@@ -144,13 +146,6 @@ const app = defineClassComponent(
       const end = this.getEndProduct();
       const total = this.totalProducts.value;
       return `${start}-${total > end ? end : total}`;
-    };
-
-    public setCategory = (categoryName?: string) => {
-      if (categoryName != null && categoryName != undefined) {
-        this.productsStore.setCategoryByName(categoryName);
-      }
-      window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     public handleSortClick = (sort: string) => {

@@ -39,22 +39,26 @@ const app = defineClassComponent(
     public constructor() {
       super();
 
-      if (this.categoryName.value) {
-        document.title = this.t("title.category", { categoryName: this.categoryName.value });
-      }
+      this.onBeforeMount(() => {
+        this.setCategory(this.categoryName.value);
+      });
     }
 
     public categoryNameWatcher = this.watch(
       [() => this.categoryName.value, () => this.productsStore.categories],
       ([categoryName]) => {
-        if (categoryName) {
-          this.productsStore.setCategoryByName(categoryName);
-          document.title = this.t("title.category", { categoryName: categoryName });
-        } else {
-          this.productsStore.setCategoryByName("");
-        }
+        this.setCategory(categoryName);
       },
     );
+
+    public setCategory = (categoryName: string) => {
+      if (categoryName) {
+        this.productsStore.setCategoryByName(categoryName);
+        document.title = this.t("title.category", { categoryName: categoryName });
+      } else {
+        this.productsStore.setCategoryByName("");
+      }
+    };
   },
 );
 </script>
