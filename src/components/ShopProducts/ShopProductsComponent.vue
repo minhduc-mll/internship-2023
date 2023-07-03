@@ -3,10 +3,10 @@
     <div class="products-nav">
       <router-link to="/" class="link">Home</router-link>
       <span> / </span>
-      <router-link to="/shop" class="link" @click="app.setCategory('')">Shop</router-link>
+      <router-link to="/shop" class="link">Shop</router-link>
       <template v-if="app.category.value.id">
         <span> / </span>
-        <router-link to="" class="link" @click="app.setCategory()">{{ app.category.value.name }}</router-link>
+        <router-link to="" class="link">{{ app.category.value.name }}</router-link>
       </template>
     </div>
     <div class="products-header">
@@ -79,14 +79,13 @@ const app = defineClassComponent(
     public pageSize: Ref<number> = this.ref(18);
     public pageNumber: Ref<number> = this.ref(1);
     public sortedBy: Ref<string> = this.ref(this.sortedOptions[0].value);
+    public category = this.computed(() => {
+      return this.productsStore.category;
+    });
 
     public constructor() {
       super();
     }
-
-    public category = this.computed(() => {
-      return this.productsStore.category;
-    });
 
     public filterProducts = this.computed(() => {
       let products = this.products.value;
@@ -118,7 +117,12 @@ const app = defineClassComponent(
     });
 
     public productsWatcher = this.watch(
-      [() => this.productsStore.category, () => this.productsStore.products],
+      [
+        () => this.productsStore.category,
+        () => this.productsStore.product,
+        () => this.productsStore.products,
+        () => this.route.fullPath,
+      ],
       ([category]) => {
         const productsCategory = this.productsStore.getProductsByCategory(category.name);
         this.products.value = productsCategory;

@@ -1,8 +1,8 @@
 <template>
   <div id="base-layout">
     <NavbarComponent></NavbarComponent>
-    <FooterComponent></FooterComponent>
     <slot></slot>
+    <FooterComponent></FooterComponent>
   </div>
 </template>
 <script setup lang="ts">
@@ -11,7 +11,7 @@ import FooterComponent from "@/components/FooterComponent/FooterComponent.vue";
 </script>
 
 <style>
-#page-layout {
+#base-layout {
   height: 100%;
   width: 100%;
 }

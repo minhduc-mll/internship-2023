@@ -29,24 +29,6 @@ const shopProps = defineProps<ShopProps>();
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
-
-    public constructor() {
-      super();
-
-      this.onBeforeMount(async () => {
-        try {
-          await this.productsStore.fetchAllProducts();
-          this.productsStore.setCategoryByName(this.categoryName.value);
-        } catch (error) {
-          console.log(error);
-        }
-      });
-
-      if (this.categoryName.value) {
-        document.title = this.t("title.category", { categoryName: this.categoryName.value });
-      }
-    }
-
     public categoryName = this.computed(() => {
       if (shopProps.categoryName) {
         return PrimitiveHelper.convertKebabToName(shopProps.categoryName);
@@ -54,11 +36,22 @@ const app = defineClassComponent(
       return "";
     });
 
+    public constructor() {
+      super();
+
+      if (this.categoryName.value) {
+        document.title = this.t("title.category", { categoryName: this.categoryName.value });
+      }
+    }
+
     public categoryNameWatcher = this.watch(
-      () => this.categoryName.value,
-      (value) => {
-        if (value) {
-          document.title = this.t("title.category", { categoryName: value });
+      [() => this.categoryName.value, () => this.productsStore.categories],
+      ([categoryName]) => {
+        if (categoryName) {
+          this.productsStore.setCategoryByName(categoryName);
+          document.title = this.t("title.category", { categoryName: categoryName });
+        } else {
+          this.productsStore.setCategoryByName("");
         }
       },
     );

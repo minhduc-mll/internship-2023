@@ -21,7 +21,14 @@
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import BaseLayout from "@/layouts/BaseLayout.vue";
 
-const app = defineClassComponent(class View extends BaseComponent {});
+const app = defineClassComponent(
+  class View extends BaseComponent {
+    public constructor() {
+      super();
+      document.title = this.t("title.notFound");
+    }
+  },
+);
 </script>
 
 <style scoped lang="scss">

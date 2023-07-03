@@ -96,7 +96,7 @@ import BaseLayout from "@/layouts/BaseLayout.vue";
 import ProductCardComponent from "@/components/ProductCard/ProductCardComponent.vue";
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import type { Ref } from "vue";
-import { ProductModel } from "@/models/product.model";
+import type { ProductModel } from "@/models/product.model";
 import { useProductsStore } from "@/stores/products.store";
 import { PrimitiveHelper } from "@/helpers/primitive.helper";
 import type { ProductProps } from "./ProductView";
@@ -110,43 +110,29 @@ const app = defineClassComponent(
       { id: 1, value: "description", title: "Description" },
       { id: 2, value: "reviews", title: `Reviews (${0})` },
     ];
-    public product: Ref<ProductModel> = this.ref(new ProductModel({}));
     public products: Ref<Array<ProductModel>> = this.ref([]);
     public activeTab: Ref<string> = this.ref("description");
 
     public constructor() {
       super();
 
-      this.onBeforeMount(async () => {
-        try {
-          await this.productsStore.fetchAllProducts();
-          if (productProps.categoryName) {
-            this.productsStore.setCategoryByName(productProps.categoryName);
-          }
-          if (productProps.productTitle) {
-            const productTitle = PrimitiveHelper.convertKebabToName(productProps.productTitle);
-            this.productsStore.setProductByTitle(productTitle);
-            this.productsStore.setCategoryByName(this.productsStore.product.category);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      });
-
       document.title = this.t("title.product", { productTitle: this.product.value.title });
     }
 
-    public productWatch = this.watch(
-      [() => this.productsStore.product, () => productProps.productTitle],
-      ([product, productTitle]) => {
-        this.product.value = product;
+    public product = this.computed(() => this.productsStore.product);
+
+    public productTitleWatch = this.watch(
+      [() => productProps.productTitle, () => this.productsStore.products],
+      ([productTitle]) => {
+        console.log(productTitle);
+        this.productsStore.setProductByTitle(productTitle);
         document.title = this.t("title.product", { productTitle: PrimitiveHelper.convertKebabToName(productTitle) });
       },
     );
 
     public relatedProductsWatch = this.watch(
-      [() => this.productsStore.category, () => this.productsStore.product, () => this.productsStore.products],
-      ([category, product]) => {
+      [() => this.productsStore.product, () => this.productsStore.category, () => this.productsStore.products],
+      ([product, category]) => {
         const productSCategory = this.productsStore.getProductsByCategory(category.name);
         const filterProducts = this.productsStore.getFilterProducts(productSCategory, 0, 8, product);
         this.products.value = filterProducts;

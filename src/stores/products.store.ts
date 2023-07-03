@@ -145,11 +145,12 @@ export const useProductsStore = defineClassStore(
       this.category.value = category;
     };
 
-    public getProductsByCategory = (category: string = "") => {
+    public getProductsByCategory = (category?: string) => {
+      const filterCategory = category || this.category.value.name;
       const products = this.products.value;
-      if (category !== "" && category.toLowerCase() !== "shop") {
+      if (filterCategory !== "" && filterCategory.toLowerCase() !== "shop") {
         return products.filter((value) => {
-          return value.category.toLowerCase() === category.toLowerCase();
+          return value.category.toLowerCase() === filterCategory.toLowerCase();
         });
       }
       return products;
