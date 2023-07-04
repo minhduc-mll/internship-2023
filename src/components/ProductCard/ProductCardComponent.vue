@@ -1,12 +1,12 @@
 <template>
   <div class="product">
     <div class="product-thumbnail">
-      <router-link :to="app.product.url" class="product-link" @click="app.setProduct">
+      <router-link :to="app.product.url" class="product-link">
         <img width="300" height="400" :src="app.product.image" />
       </router-link>
     </div>
     <div class="product-detail">
-      <router-link :to="app.product.url" class="product-link" @click="app.setProduct">
+      <router-link :to="app.product.url" class="product-link">
         <div class="product-title">{{ app.product.title }}</div>
       </router-link>
       <div class="product-star">
@@ -48,26 +48,22 @@ import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin"
 import type { ProductProps } from "./ProductCardComponent";
 import type { ProductModel } from "@/models/product.model";
 import { useProductsStore } from "@/stores/products.store";
+import { useShoppingCartStore } from "@/stores/shoppingCart.store";
 
 const props = defineProps<ProductProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
+    public shoppingCartStore = useShoppingCartStore();
     public product: ProductModel = this.reactive(props.product);
 
     public constructor() {
       super();
     }
 
-    public setProduct = () => {
-      this.productsStore.product = this.product;
-      this.productsStore.setCategoryByName(this.product.category);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-
     public handleAddToCart = () => {
-      this.productsStore.addShoppingCart(this.product);
+      this.shoppingCartStore.addShoppingCart(this.product);
     };
   },
 );

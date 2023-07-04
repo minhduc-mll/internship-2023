@@ -32,12 +32,13 @@ import { useProductsStore } from "@/stores/products.store";
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
+    public products = this.computed(() => {
+      return this.productsStore.getDealsProducts(this.productsStore.products, 0, 5);
+    });
 
     public constructor() {
       super();
     }
-
-    public products = this.computed(() => this.productsStore.dealsProducts);
   },
 );
 </script>

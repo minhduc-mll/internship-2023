@@ -3,10 +3,10 @@
     <div class="products-nav">
       <router-link to="/" class="link">Home</router-link>
       <span> / </span>
-      <router-link to="/shop" class="link" @click="app.setCategory('')">Shop</router-link>
+      <router-link to="/shop" class="link">Shop</router-link>
       <template v-if="app.category.value.id">
         <span> / </span>
-        <router-link to="" class="link" @click="app.setCategory()">{{ app.category.value.name }}</router-link>
+        <router-link to="" class="link">{{ app.category.value.name }}</router-link>
       </template>
     </div>
     <div class="products-header">
@@ -21,7 +21,7 @@
             :selected="app.sortedBy.value === option.value"
             @click="app.handleSortClick(option.value)"
           >
-            {{ option.title }}
+            {{ option.text }}
           </option>
         </template>
       </select>
@@ -68,25 +68,31 @@ const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
     public sortedOptions = [
-      { id: 1, value: "default", title: "Default sorting" },
-      { id: 2, value: "popularity", title: "Sort by popularity" },
-      { id: 3, value: "rating", title: "Sort by average rating" },
-      { id: 4, value: "lastest", title: "Sort by latest" },
-      { id: 5, value: "price-asc", title: "Sort by price: low to high" },
-      { id: 6, value: "price-desc", title: "Sort by price: high to low" },
+      { id: 1, value: "default", text: "Default sorting" },
+      { id: 2, value: "popularity", text: "Sort by popularity" },
+      { id: 3, value: "rating", text: "Sort by average rating" },
+      { id: 4, value: "lastest", text: "Sort by latest" },
+      { id: 5, value: "price-asc", text: "Sort by price: low to high" },
+      { id: 6, value: "price-desc", text: "Sort by price: high to low" },
     ];
     public products: Ref<Array<ProductModel>> = this.ref([]);
     public pageSize: Ref<number> = this.ref(18);
     public pageNumber: Ref<number> = this.ref(1);
     public sortedBy: Ref<string> = this.ref(this.sortedOptions[0].value);
-
-    public constructor() {
-      super();
-    }
-
     public category = this.computed(() => {
       return this.productsStore.category;
     });
+
+    public constructor() {
+      super();
+
+      this.onBeforeMount(() => {
+        const productsCategory = this.productsStore.getProductsByCategory(this.category.value.name);
+        this.products.value = productsCategory;
+        this.pageNumber.value = 1;
+        this.sortedBy.value = this.sortedOptions[0].value;
+      });
+    }
 
     public filterProducts = this.computed(() => {
       let products = this.products.value;
@@ -118,7 +124,7 @@ const app = defineClassComponent(
     });
 
     public productsWatcher = this.watch(
-      [() => this.productsStore.category, () => this.productsStore.products],
+      [() => this.category.value, () => this.productsStore.products],
       ([category]) => {
         const productsCategory = this.productsStore.getProductsByCategory(category.name);
         this.products.value = productsCategory;
@@ -142,17 +148,9 @@ const app = defineClassComponent(
       return `${start}-${total > end ? end : total}`;
     };
 
-    public setCategory = (categoryName?: string) => {
-      if (categoryName != null && categoryName != undefined) {
-        this.productsStore.setCategoryByName(categoryName);
-      }
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-
     public handleSortClick = (sort: string) => {
       this.sortedBy.value = sort;
       this.pageNumber.value = 1;
-      window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     public handlePageChange = (page: number) => {

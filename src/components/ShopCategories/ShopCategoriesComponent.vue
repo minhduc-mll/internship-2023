@@ -2,7 +2,7 @@
   <div class="categories">
     <h1 class="cat-title">Categories</h1>
     <ul class="cat-list">
-      <li class="cat-item" v-for="category of app.categories.value" :key="category.id">
+      <li class="cat-item" v-for="category of app.productsStore.categories" :key="category.id">
         <router-link :to="category.url" class="item-name" @click="app.setCategory(category.name)">
           {{ category.name }}
         </router-link>
@@ -24,11 +24,8 @@ const app = defineClassComponent(
       super();
     }
 
-    public categories = this.computed(() => this.productsStore.categories);
-
     public setCategory = (categoryName: string) => {
       this.productsStore.setCategoryByName(categoryName);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     };
   },
 );

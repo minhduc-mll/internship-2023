@@ -3,7 +3,7 @@
     <div class="collections-content">
       <div class="top-content">
         <div class="widget-wrap">
-          <h1 class="heading-title">Collections</h1>
+          <h1 class="heading-title">{{ app.route.name }}</h1>
           <div class="heading-images">
             <div class="row m-0 p-0">
               <div class="col-4 m-0 p-0">
@@ -138,10 +138,6 @@ const app = defineClassComponent(
         & span {
           word-wrap: break-word;
         }
-      }
-
-      & button {
-        background-color: transparent;
       }
     }
   }

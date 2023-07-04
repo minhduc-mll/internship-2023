@@ -1,12 +1,11 @@
 <template>
-  <button class="g-btn" @click="app.handleShoppingCart">Cart</button>
-  <div class="cart-overlay" :class="{ active: app.isActive.value }" @click="app.handleShoppingCart"></div>
-  <div class="shopping-card" :class="{ active: app.isActive.value }">
+  <div :class="['cart-overlay', { active: app.shoppingCartStore.isActive }]" @click="app.closeShoppingCart"></div>
+  <div :class="['shopping-card', { active: app.shoppingCartStore.isActive }]">
     <div class="cart-header">
       <div class="header-title">Shopping Cart</div>
       <button class="close-btn" @click="app.closeShoppingCart"><i class="bi bi-x"></i></button>
     </div>
-    <div class="cart-content" v-if="app.products.value.length">
+    <div class="cart-content" v-if="app.totalProductsCart.value">
       <ul class="cart-list">
         <li class="cart-item" v-for="product of app.products.value" :key="product.id">
           <ShoppingCartProductComponent :cartProduct="product"></ShoppingCartProductComponent>
@@ -16,7 +15,7 @@
         <span>Subtotal:</span>
         <span class="amount">
           <span class="currency-symbol">$</span>
-          <span>{{ app.getTotalCartAmount() }}</span>
+          <span>{{ app.totalCartAmount.value.toFixed(2) }}</span>
         </span>
       </div>
       <div class="cart-buttons">
@@ -38,56 +37,44 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import ShoppingCartProductComponent from "@/components/ShoppingCartProduct/ShoppingCartProductComponent.vue";
-import type { Ref } from "vue";
-import { useProductsStore } from "@/stores/products.store";
+import { useShoppingCartStore } from "@/stores/shoppingCart.store";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public productsStore = useProductsStore();
-    public products: Ref<Array<any>> = this.ref([]);
-    public isActive: Ref<boolean> = this.ref(false);
+    public shoppingCartStore = useShoppingCartStore();
+    public products = this.computed(() => this.shoppingCartStore.productsCart);
+    public totalProductsCart = this.computed(() => this.shoppingCartStore.getTotalProductsCart());
+    public totalCartAmount = this.computed(() => this.shoppingCartStore.getTotalCartAmount());
 
     public constructor() {
       super();
 
       this.onBeforeMount(() => {
-        this.productsStore.getShoppingCart();
+        this.shoppingCartStore.getShoppingCart();
+      });
+
+      this.onBeforeUpdate(() => {
+        this.shoppingCartStore.getShoppingCart();
       });
     }
 
-    public productsCartWatcher = this.watch(
-      () => this.productsStore.productsCart,
-      (products) => {
-        this.products.value = products;
-      },
-    );
-
-    public getTotalCartAmount = () => {
-      let total = 0;
-      this.products.value.map((product) => {
-        total += product.quantity * product.price;
-      });
-      return total;
-    };
-
     public closeShoppingCart = () => {
-      this.isActive.value = false;
-    };
-
-    public handleShoppingCart = () => {
-      this.isActive.value = !this.isActive.value;
+      this.shoppingCartStore.setActiveShoppingCart(false);
     };
 
     public handleViewCart = () => {
       this.router.push({ path: "/cart", name: "Cart" });
+      this.closeShoppingCart();
     };
 
     public handleCheckout = () => {
       this.router.push({ path: "/checkout", name: "Checkout" });
+      this.closeShoppingCart();
     };
 
     public handleContinueShopping = () => {
       this.router.push({ path: "/shop", name: "Shop" });
+      this.closeShoppingCart();
     };
   },
 );
@@ -182,7 +169,7 @@ const app = defineClassComponent(
 
     & .cart-list {
       position: relative;
-      padding: 21px;
+      padding: 21px !important;
       flex: 1;
       overflow: auto;
       margin: 0;

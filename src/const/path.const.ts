@@ -5,7 +5,6 @@ import ProductViewVue from "@/views/Product/ProductView.vue";
 import NewArrivalsViewVue from "@/views/NewArrivals/NewArrivalsView.vue";
 import CollectionsViewVue from "@/views/Collections/CollectionsView.vue";
 import SearchResultsViewVue from "@/views/SearchResults/SearchResultsView.vue";
-import ShoppingCartViewVue from "@/components/ShoppingCart/ShoppingCart.vue";
 import ComingSoonViewVue from "@/views/ComingSoon/ComingSoonView.vue";
 
 export class PathConst {
@@ -77,7 +76,8 @@ export class PathConst {
   public static cart: Route = {
     path: "/cart",
     name: "Cart",
-    component: ShoppingCartViewVue,
+    component: ComingSoonViewVue,
+    props: { title: "cart", message: "Cart Page" },
     meta: {
       title: "title.cart",
     },

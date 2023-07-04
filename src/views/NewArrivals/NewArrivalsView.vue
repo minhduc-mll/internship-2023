@@ -39,29 +39,17 @@ import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin"
 import BaseLayout from "@/layouts/BaseLayout.vue";
 import ProductCardComponent from "@/components/ProductCard/ProductCardComponent.vue";
 import { useProductsStore } from "@/stores/products.store";
-import type { Ref } from "vue";
-import type { ProductModel } from "@/models/product.model";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
-    public products: Ref<Array<ProductModel>> = this.ref([]);
+    public products = this.computed(() => {
+      return this.productsStore.getFilterProducts(this.productsStore.products, 0, 20);
+    });
 
     public constructor() {
       super();
-
-      this.onBeforeMount(() => {
-        this.productsStore.fetchAllProducts();
-      });
     }
-
-    public productsWatcher = this.watch(
-      () => this.productsStore.products,
-      (products) => {
-        const productsNewArrivals = this.productsStore.getFilterProducts(products, 0, 20);
-        this.products.value = productsNewArrivals;
-      },
-    );
   },
 );
 </script>
