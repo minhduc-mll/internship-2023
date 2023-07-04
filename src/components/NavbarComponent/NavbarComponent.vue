@@ -30,9 +30,9 @@
           </button>
         </div>
         <ul class="navbar-menu-items">
-          <li><RouterLink to="/shop" class="navbar-menu-items-1">Shop By Categories</RouterLink></li>
-          <li><RouterLink to="/new-arrivals" class="navbar-menu-items-1">New Arrivals</RouterLink></li>
-          <li><RouterLink to="/collections" class="navbar-menu-items-1">Collections</RouterLink></li>
+          <li v-for="page of app.pages" :key="page.id">
+            <RouterLink :to="page.url" class="navbar-menu-items-1">{{ page.text }}</RouterLink>
+          </li>
         </ul>
       </div>
       <div class="nav-mid site-header-section">
@@ -73,29 +73,27 @@
 
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
-import type { Page } from "./NavbarComponent";
 import type { Ref } from "vue";
-import { useProductsStore } from "@/stores/products.store";
+import { useShoppingCartStore } from "@/stores/shoppingCart.store";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public productsStore = useProductsStore();
-    public pages: Ref<Array<Page>> = this.ref([
-      { id: 1, text: "Home", url: "/" },
-      { id: 2, text: "Categories", url: "/categories" },
-      { id: 3, text: "NewArrivals", url: "/newarrivals" },
-      { id: 4, text: "Collections", url: "/collections" },
-    ]);
+    public shoppingCartStore = useShoppingCartStore();
+    public pages = [
+      { id: 1, text: "Shop By Categories", url: "/shop" },
+      { id: 2, text: "New Arrivals", url: "/new-arrivals" },
+      { id: 3, text: "Collections", url: "/collections" },
+    ];
     public activeSearch: Ref<boolean> = this.ref(false);
     public searchInput: Ref<string> = this.ref("");
-    public totalProductsCart = this.computed(() => this.productsStore.getTotalProductsCart());
-    public totalCartAmount = this.computed(() => this.productsStore.getTotalCartAmount());
+    public totalProductsCart = this.computed(() => this.shoppingCartStore.getTotalProductsCart());
+    public totalCartAmount = this.computed(() => this.shoppingCartStore.getTotalCartAmount());
 
     public constructor() {
       super();
 
       this.onBeforeMount(() => {
-        this.productsStore.getShoppingCart();
+        this.shoppingCartStore.getShoppingCart();
       });
     }
 
@@ -114,7 +112,7 @@ const app = defineClassComponent(
     };
 
     public handleCartClick = () => {
-      this.productsStore.setActiveShoppingCart(true);
+      this.shoppingCartStore.setActiveShoppingCart(true);
     };
   },
 );

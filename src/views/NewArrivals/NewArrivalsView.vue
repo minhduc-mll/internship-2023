@@ -44,8 +44,7 @@ const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
     public products = this.computed(() => {
-      const productsNewArrivals = this.productsStore.getFilterProducts(this.productsStore.products, 0, 20);
-      return productsNewArrivals;
+      return this.productsStore.getFilterProducts(this.productsStore.products, 0, 20);
     });
 
     public constructor() {

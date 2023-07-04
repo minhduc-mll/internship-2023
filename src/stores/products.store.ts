@@ -12,15 +12,10 @@ export const useProductsStore = defineClassStore(
   class Store extends BaseStore {
     public name: string = "products";
 
-    public shoppingCartKey: string = "productsCart";
-    public isActiveShoppingCart: Ref<boolean> = this.ref(false);
-
     public product: Ref<ProductModel> = this.ref(new ProductModel({}));
     public products: Ref<Array<ProductModel>> = this.ref([]);
     public category: Ref<CategoryModel> = this.ref(new CategoryModel({}));
     public categories: Ref<Array<CategoryModel>> = this.ref([]);
-    public dealsProducts: Ref<Array<ProductModel>> = this.ref([]);
-    public productsCart: Ref<Array<any>> = this.ref([]);
 
     public fetchAllProducts = async () => {
       try {
@@ -40,7 +35,6 @@ export const useProductsStore = defineClassStore(
           });
           this.products.value = products;
           this.getCategories();
-          this.getDealsProducts();
           return products;
         }
         return [];
@@ -54,12 +48,12 @@ export const useProductsStore = defineClassStore(
       const categories: Array<CategoryModel> = [];
       let id = 1;
       products.forEach((product) => {
-        const existing = categories.filter((value) => {
+        const existing = categories.find((value) => {
           return value.name == product.category;
         });
 
-        if (existing.length) {
-          const existingIndex = categories.indexOf(existing[0]);
+        if (existing) {
+          const existingIndex = categories.indexOf(existing);
           categories[existingIndex].size++;
         } else {
           const categoryUrl = "/shop/" + product.category.toLowerCase();
@@ -101,48 +95,48 @@ export const useProductsStore = defineClassStore(
 
     public getProductByTitle = (title: string) => {
       const products = this.products.value;
-      const productWithTitle = products.filter((value) => {
+      const productWithTitle = products.find((value) => {
         return value.title === title;
       });
-      if (productWithTitle.length) {
-        return productWithTitle[0];
+      if (productWithTitle) {
+        return productWithTitle;
       }
       return new ProductModel({});
     };
 
     public setProductByTitle = (title: string) => {
       const products = this.products.value;
-      let product = new ProductModel({});
-      const productWithTitle = products.filter((value) => {
+      const productWithTitle = products.find((value) => {
         return value.title.toLowerCase() === title.toLowerCase();
       });
-      if (productWithTitle.length) {
-        product = productWithTitle[0];
+      if (productWithTitle) {
+        this.product.value = productWithTitle;
+      } else {
+        this.product.value = new ProductModel({});
       }
-      this.product.value = product;
     };
 
     public getCategoryByName = (name: string) => {
       const categories = this.categories.value;
-      const categoryWithName = categories.filter((value) => {
+      const categoryWithName = categories.find((value) => {
         return value.name.toLowerCase() === name.toLowerCase();
       });
-      if (categoryWithName.length) {
-        return categoryWithName[0];
+      if (categoryWithName) {
+        return categoryWithName;
       }
       return new CategoryModel({});
     };
 
     public setCategoryByName = (name: string) => {
       const categories = this.categories.value;
-      let category = new CategoryModel({});
-      const categoryWithName = categories.filter((value) => {
+      const categoryWithName = categories.find((value) => {
         return value.name.toLowerCase() === name.toLowerCase();
       });
-      if (categoryWithName.length) {
-        category = categoryWithName[0];
+      if (categoryWithName) {
+        this.category.value = categoryWithName;
+      } else {
+        this.category.value = new CategoryModel({});
       }
-      this.category.value = category;
     };
 
     public getProductsByCategory = (category?: string) => {
@@ -156,16 +150,21 @@ export const useProductsStore = defineClassStore(
       return products;
     };
 
-    public getDealsProducts = (start: number = 0, limit: number = 5) => {
-      const products = this.products.value;
-      const filterProducts = products
-        .filter((value) => {
-          return value.deals;
-        })
-        .filter((_, index) => {
-          return index >= start && index < start + limit;
-        });
-      this.dealsProducts.value = filterProducts;
+    public getDealsProducts = (products: Array<ProductModel>, start?: number, limit?: number) => {
+      const dealsProducts = products.filter((value) => {
+        return value.deals;
+      });
+      return dealsProducts.filter((_, index) => {
+        if (start == undefined || start < 0) {
+          start = 0;
+        }
+        if (limit == undefined || limit < 0) {
+          limit = dealsProducts.length;
+        }
+        start = Math.ceil(start);
+        limit = Math.ceil(limit);
+        return index >= start && index < start + limit;
+      });
     };
 
     public getFilterProducts = (
@@ -193,73 +192,6 @@ export const useProductsStore = defineClassStore(
       return products.sort((a, b) => {
         return a[key] - b[key];
       });
-    };
-
-    public getShoppingCart = () => {
-      const productsJson = localStorage.getItem(this.shoppingCartKey);
-      if (productsJson) {
-        const productsCart = JSON.parse(productsJson);
-        this.productsCart.value = productsCart;
-      }
-    };
-
-    public getTotalProductsCart = () => {
-      let total = 0;
-      this.productsCart.value.forEach((value) => {
-        total += value.quantity;
-      });
-      return total;
-    };
-
-    public getTotalCartAmount = () => {
-      let total = 0;
-      this.productsCart.value.map((product) => {
-        if (product.deals) {
-          total += product.quantity * (product.price * 0.8);
-        } else {
-          total += product.quantity * product.price;
-        }
-      });
-      return total;
-    };
-
-    public addShoppingCart = (product: ProductModel) => {
-      this.getShoppingCart();
-      const products = this.productsCart.value;
-      const existing = products.filter((value) => {
-        return value.id === product.id;
-      });
-      if (existing.length) {
-        const existingIndex = products.indexOf(existing[0]);
-        products[existingIndex].quantity++;
-      } else {
-        products.push({
-          ...product,
-          quantity: 1,
-        });
-      }
-      this.saveLocalStorage();
-    };
-
-    public editShoppingCart = () => {
-      this.getShoppingCart();
-      this.saveLocalStorage();
-    };
-
-    public removeShoppingCart = (product: ProductModel) => {
-      this.getShoppingCart();
-      this.productsCart.value = this.productsCart.value.filter((value) => {
-        return value.id !== product.id;
-      });
-      this.saveLocalStorage();
-    };
-
-    public saveLocalStorage = () => {
-      localStorage.setItem(this.shoppingCartKey, JSON.stringify(this.productsCart.value));
-    };
-
-    public setActiveShoppingCart = (active: boolean) => {
-      this.isActiveShoppingCart.value = active;
     };
   },
 );

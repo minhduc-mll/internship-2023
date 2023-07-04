@@ -1,22 +1,22 @@
 <template>
   <div class="product-cart">
     <div class="product-thumbnail">
-      <router-link :to="app.product.url" class="product-link" @click="app.closeShoppingCart">
-        <img width="300" height="400" :src="app.product.image" />
+      <router-link :to="app.product.value.url" class="product-link" @click="app.closeShoppingCart">
+        <img width="300" height="400" :src="app.product.value.image" />
       </router-link>
     </div>
     <div class="product-detail">
       <div class="left">
-        <router-link :to="app.product.url" class="product-link" @click="app.closeShoppingCart">
-          <div class="product-title">{{ app.product.title }}</div>
+        <router-link :to="app.product.value.url" class="product-link" @click="app.closeShoppingCart">
+          <div class="product-title">{{ app.product.value.title }}</div>
         </router-link>
         <div class="product-desc">
-          <span class="quantity">{{ app.product.quantity }}</span>
+          <span class="quantity">{{ app.product.value.quantity }}</span>
           <span> x </span>
           <span class="amount">
             <span class="currency-symbol">$</span>
-            <span v-if="app.product.deals">{{ (app.product.price * 0.8).toFixed(2) }}</span>
-            <span v-else>{{ app.product.price.toFixed(2) }}</span>
+            <span v-if="app.product.value.deals">{{ (app.product.value.price * 0.8).toFixed(2) }}</span>
+            <span v-else>{{ app.product.value.price.toFixed(2) }}</span>
           </span>
         </div>
       </div>
@@ -30,25 +30,25 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import type { CartProductProps } from "./ShoppingCartProductComponent";
-import { useProductsStore } from "@/stores/products.store";
+import { useShoppingCartStore } from "@/stores/shoppingCart.store";
 
 const props = defineProps<CartProductProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public productsStore = useProductsStore();
-    public product: any = this.reactive(props.cartProduct);
+    public shoppingCartStore = useShoppingCartStore();
+    public product = this.computed(() => props.cartProduct);
 
     public constructor() {
       super();
     }
 
     public handleRemoveFromCart = () => {
-      this.productsStore.removeShoppingCart(this.product);
+      this.shoppingCartStore.removeShoppingCart(this.product.value);
     };
 
     public closeShoppingCart = () => {
-      this.productsStore.setActiveShoppingCart(false);
+      this.shoppingCartStore.setActiveShoppingCart(false);
     };
   },
 );

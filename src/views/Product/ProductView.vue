@@ -2,6 +2,15 @@
   <BaseLayout>
     <div class="product-content">
       <div class="product-container">
+        <div class="product-message" v-if="app.showMessage.value">
+          <div class="message-left">
+            <i class="bi bi-check-circle"></i>
+            <span>
+              {{ `${app.quantityAddToCart.value} x "${app.product.value.title}" have been added to your cart.` }}
+            </span>
+          </div>
+          <button class="g-btn" @click="app.handleViewCart">View Cart</button>
+        </div>
         <div class="product-gallery">
           <img :src="app.product.value.image" :alt="app.product.value.title" class="gallery-thumbnail" />
           <div class="gallery-onsale" v-if="app.product.value.deals">
@@ -43,9 +52,9 @@
           <div class="summary-detail">
             <span>{{ app.product.value.desc }}</span>
           </div>
-          <form action="" class="cart">
-            <input type="number" class="quantity-input" value="1" />
-            <button class="g-btn add-to-card-button" @click.prevent="">Add to cart</button>
+          <form action="" class="cart" @submit.prevent="app.handleAddToCart">
+            <input type="number" class="quantity-input" min="1" v-model="app.quantity.value" />
+            <button class="g-btn add-to-card-button">Add to cart</button>
           </form>
           <div class="summary-meta">
             <span class="posted-in"
@@ -97,22 +106,27 @@ import ProductCardComponent from "@/components/ProductCard/ProductCardComponent.
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import type { Ref } from "vue";
 import type { ProductModel } from "@/models/product.model";
-import { useProductsStore } from "@/stores/products.store";
-import { PrimitiveHelper } from "@/helpers/primitive.helper";
 import type { ProductProps } from "./ProductView";
+import { useProductsStore } from "@/stores/products.store";
+import { useShoppingCartStore } from "@/stores/shoppingCart.store";
+import { PrimitiveHelper } from "@/helpers/primitive.helper";
 
 const productProps = defineProps<ProductProps>();
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
+    public shoppingCartStore = useShoppingCartStore();
     public productTabs = [
       { id: 1, value: "description", title: "Description" },
       { id: 2, value: "reviews", title: `Reviews (${0})` },
     ];
+    public product = this.computed(() => this.productsStore.product);
     public products: Ref<Array<ProductModel>> = this.ref([]);
     public activeTab: Ref<string> = this.ref("description");
-    public product = this.computed(() => this.productsStore.product);
+    public quantity: Ref<number> = this.ref(1);
+    public quantityAddToCart: Ref<number> = this.ref(1);
+    public showMessage: Ref<boolean> = this.ref(false);
     public categoryName = this.computed(() => {
       if (productProps.categoryName) {
         return PrimitiveHelper.convertKebabToName(productProps.categoryName);
@@ -131,6 +145,10 @@ const app = defineClassComponent(
 
       this.onBeforeMount(() => {
         this.setProduct(this.productTitle.value, this.categoryName.value);
+      });
+
+      this.onMounted(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
 
       this.onUpdated(() => {
@@ -156,6 +174,19 @@ const app = defineClassComponent(
         document.title = this.t("title.product", { productTitle: productTitle });
       }
     };
+
+    public handleAddToCart = () => {
+      if (this.quantity.value) {
+        this.quantityAddToCart.value = this.quantity.value;
+        this.shoppingCartStore.addShoppingCart(this.product.value, this.quantityAddToCart.value);
+        this.showMessage.value = true;
+        this.quantity.value = 1;
+      }
+    };
+
+    public handleViewCart = () => {
+      this.shoppingCartStore.setActiveShoppingCart(true);
+    };
   },
 );
 </script>
@@ -174,6 +205,36 @@ const app = defineClassComponent(
     margin-right: auto;
     background-color: #fff;
     padding: 85px 106px;
+
+    & .product-message {
+      position: relative;
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      border-top: 3px solid #6a5950;
+      margin-bottom: 32px;
+      padding: 16px 32px 16px 54px;
+      background-color: #f7f6f7;
+      color: #515151;
+
+      & .message-left {
+        display: flex;
+        align-items: center;
+
+        & i {
+          position: absolute;
+          left: 24px;
+          color: #6a5950;
+        }
+
+        & span {
+          font-size: 16px;
+          font-weight: 400;
+          line-height: 26px;
+          color: #6a5950;
+        }
+      }
+    }
 
     & .product-gallery {
       position: relative;

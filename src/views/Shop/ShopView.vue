@@ -43,6 +43,10 @@ const app = defineClassComponent(
         this.setCategory(this.categoryName.value);
       });
 
+      this.onMounted(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
       this.onUpdated(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       });

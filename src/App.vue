@@ -10,10 +10,12 @@ import { AppConst } from "./const/app.const";
 import { BaseComponent, defineClassComponent } from "./plugins/component.plugin";
 import { GblobalEvent } from "./plugins/event.plugin";
 import { useProductsStore } from "./stores/products.store";
+import { useShoppingCartStore } from "./stores/shoppingCart.store";
 
 const app = defineClassComponent(
   class App extends BaseComponent {
     public productsStore = useProductsStore();
+    public shoppingCartStore = useShoppingCartStore();
     public isError = this.ref(false);
 
     public constructor() {
@@ -22,7 +24,7 @@ const app = defineClassComponent(
       this.onBeforeMount(async () => {
         try {
           await this.productsStore.fetchAllProducts();
-          await this.productsStore.getShoppingCart();
+          await this.shoppingCartStore.getShoppingCart();
         } catch (error) {
           console.log(error);
         }
@@ -37,10 +39,6 @@ const app = defineClassComponent(
 
       GblobalEvent.on(AppConst.EVENTS.internalError, () => {
         this.isError.value = true;
-      });
-
-      this.searchParams.onStateChange((params) => {
-        console.log(params);
       });
     }
   },

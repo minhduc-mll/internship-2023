@@ -8,9 +8,9 @@
         <div class="desc">
           Sorry, but nothing matched your search terms. Please try again with some different keywords.
         </div>
-        <form action="" class="search-form">
+        <form action="" class="search-form" @submit.prevent="app.handleSearch">
           <input type="text" class="search-input" placeholder="Search ..." v-model="app.searchInput.value" />
-          <button class="g-btn search-btn" @click.prevent="app.handleSearch">Search</button>
+          <button class="g-btn search-btn">Search</button>
         </form>
       </div>
     </div>

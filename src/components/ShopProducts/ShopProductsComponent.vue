@@ -21,7 +21,7 @@
             :selected="app.sortedBy.value === option.value"
             @click="app.handleSortClick(option.value)"
           >
-            {{ option.title }}
+            {{ option.text }}
           </option>
         </template>
       </select>
@@ -68,12 +68,12 @@ const app = defineClassComponent(
   class Component extends BaseComponent {
     public productsStore = useProductsStore();
     public sortedOptions = [
-      { id: 1, value: "default", title: "Default sorting" },
-      { id: 2, value: "popularity", title: "Sort by popularity" },
-      { id: 3, value: "rating", title: "Sort by average rating" },
-      { id: 4, value: "lastest", title: "Sort by latest" },
-      { id: 5, value: "price-asc", title: "Sort by price: low to high" },
-      { id: 6, value: "price-desc", title: "Sort by price: high to low" },
+      { id: 1, value: "default", text: "Default sorting" },
+      { id: 2, value: "popularity", text: "Sort by popularity" },
+      { id: 3, value: "rating", text: "Sort by average rating" },
+      { id: 4, value: "lastest", text: "Sort by latest" },
+      { id: 5, value: "price-asc", text: "Sort by price: low to high" },
+      { id: 6, value: "price-desc", text: "Sort by price: high to low" },
     ];
     public products: Ref<Array<ProductModel>> = this.ref([]);
     public pageSize: Ref<number> = this.ref(18);

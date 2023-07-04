@@ -1,11 +1,11 @@
 <template>
-  <div class="cart-overlay" :class="{ active: app.isActive.value }" @click="app.closeShoppingCart"></div>
-  <div class="shopping-card" :class="{ active: app.isActive.value }">
+  <div :class="['cart-overlay', { active: app.shoppingCartStore.isActive }]" @click="app.closeShoppingCart"></div>
+  <div :class="['shopping-card', { active: app.shoppingCartStore.isActive }]">
     <div class="cart-header">
       <div class="header-title">Shopping Cart</div>
       <button class="close-btn" @click="app.closeShoppingCart"><i class="bi bi-x"></i></button>
     </div>
-    <div class="cart-content" v-if="app.products.value.length">
+    <div class="cart-content" v-if="app.totalProductsCart.value">
       <ul class="cart-list">
         <li class="cart-item" v-for="product of app.products.value" :key="product.id">
           <ShoppingCartProductComponent :cartProduct="product"></ShoppingCartProductComponent>
@@ -37,29 +37,29 @@
 <script setup lang="ts">
 import { BaseComponent, defineClassComponent } from "@/plugins/component.plugin";
 import ShoppingCartProductComponent from "@/components/ShoppingCartProduct/ShoppingCartProductComponent.vue";
-import { useProductsStore } from "@/stores/products.store";
+import { useShoppingCartStore } from "@/stores/shoppingCart.store";
 
 const app = defineClassComponent(
   class Component extends BaseComponent {
-    public productsStore = useProductsStore();
-    public products = this.computed(() => this.productsStore.productsCart);
-    public totalCartAmount = this.computed(() => this.productsStore.getTotalCartAmount());
-    public isActive = this.computed(() => this.productsStore.isActiveShoppingCart);
+    public shoppingCartStore = useShoppingCartStore();
+    public products = this.computed(() => this.shoppingCartStore.productsCart);
+    public totalProductsCart = this.computed(() => this.shoppingCartStore.getTotalProductsCart());
+    public totalCartAmount = this.computed(() => this.shoppingCartStore.getTotalCartAmount());
 
     public constructor() {
       super();
 
       this.onBeforeMount(() => {
-        this.productsStore.getShoppingCart();
+        this.shoppingCartStore.getShoppingCart();
+      });
+
+      this.onBeforeUpdate(() => {
+        this.shoppingCartStore.getShoppingCart();
       });
     }
 
     public closeShoppingCart = () => {
-      this.productsStore.setActiveShoppingCart(false);
-    };
-
-    public handleShoppingCart = () => {
-      this.productsStore.setActiveShoppingCart(!this.isActive.value);
+      this.shoppingCartStore.setActiveShoppingCart(false);
     };
 
     public handleViewCart = () => {
