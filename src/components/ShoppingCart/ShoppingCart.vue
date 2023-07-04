@@ -7,7 +7,7 @@
     </div>
     <div class="cart-content" v-if="app.totalProductsCart.value">
       <ul class="cart-list">
-        <li class="cart-item" v-for="product of app.products.value" :key="product.id">
+        <li class="cart-item" v-for="product of app.shoppingCartStore.productsCart" :key="product.id">
           <ShoppingCartProductComponent :cartProduct="product"></ShoppingCartProductComponent>
         </li>
       </ul>
@@ -15,7 +15,7 @@
         <span>Subtotal:</span>
         <span class="amount">
           <span class="currency-symbol">$</span>
-          <span>{{ app.totalCartAmount.value.toFixed(2) }}</span>
+          <span>{{ app.totalCartAmount.value }}</span>
         </span>
       </div>
       <div class="cart-buttons">
@@ -42,7 +42,6 @@ import { useShoppingCartStore } from "@/stores/shoppingCart.store";
 const app = defineClassComponent(
   class Component extends BaseComponent {
     public shoppingCartStore = useShoppingCartStore();
-    public products = this.computed(() => this.shoppingCartStore.productsCart);
     public totalProductsCart = this.computed(() => this.shoppingCartStore.getTotalProductsCart());
     public totalCartAmount = this.computed(() => this.shoppingCartStore.getTotalCartAmount());
 

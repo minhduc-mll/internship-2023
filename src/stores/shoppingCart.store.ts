@@ -8,6 +8,7 @@ export const useShoppingCartStore = defineClassStore(
 
     public isActive: Ref<boolean> = this.ref(false);
     public productsCart: Ref<Array<any>> = this.ref([]);
+    public showMessage = this.reactive({ value: false, message: "" });
 
     public getShoppingCart = () => {
       const productsJson = localStorage.getItem(this.name);
@@ -34,7 +35,7 @@ export const useShoppingCartStore = defineClassStore(
           total += product.quantity * product.price;
         }
       });
-      return total;
+      return total.toFixed(2);
     };
 
     public addShoppingCart = (product: ProductModel, quantity: number = 1) => {

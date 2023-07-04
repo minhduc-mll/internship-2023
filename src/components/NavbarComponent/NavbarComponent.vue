@@ -56,7 +56,7 @@
         <div class="items-cart" @click="app.handleCartClick">
           <span class="amount">
             <span class="currency-symbol">$</span>
-            <span>{{ app.totalCartAmount.value.toFixed(2) }}</span>
+            <span>{{ app.totalCartAmount.value }}</span>
           </span>
           <div class="cart">
             <i class="bi bi-basket3-fill"></i>
