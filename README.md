@@ -26,12 +26,12 @@ yarn dev
 
 ## Features
 
-- View product by category.
-- View product detail.
+- Display a list of products by category.
+- Filter products based on criteria such as price, category, and other specifications.
 - View new arrivals.
-- View collections.
-- Add to shopping cart.
-- View shopping cart
+- View the collections.
+- Add and manage shopping cart.
+- Order management.
 - Checkout.
 - Search product.
 
