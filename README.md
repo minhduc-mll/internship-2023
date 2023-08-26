@@ -5,7 +5,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/minhduc-mll/internship-2023?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/minhduc-mll/internship-2023?style=social)
 
-Shop demo project having the basic functionalities of an e-commerce website."
+Shop demo project having the basic functionalities of an e-commerce website.
 
 ## Prerequisites
 
